@@ -1,17 +1,10 @@
 package rental;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class CarRentalCompany {
+public class CarRentalCompany implements CarRentalCompanyInterface {
 
 	private static Logger logger = Logger.getLogger(CarRentalCompany.class.getName());
 	
@@ -177,6 +170,25 @@ public class CarRentalCompany {
 			}
 		}
 		return out.toString();
+	}
+
+	public List<Reservation> getReservationsByRenter(String clientName) {
+        List<Reservation> renterReservations = new ArrayList<>();
+        for (Car car : cars) {
+            renterReservations.addAll(car.getReservationsByRenter(clientName));
+        }
+		return renterReservations;
+	}
+
+	public int getNumberOfReservationsForCarType(String carType)  {
+        int total = 0;
+
+        for (Car car : cars) {
+            if(car.getType().getName().equals(carType))
+                total += car.getNumberOfReservations();
+        }
+
+        return total;
 	}
 	
 }

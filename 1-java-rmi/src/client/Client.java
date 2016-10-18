@@ -1,13 +1,18 @@
 package client;
 
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import rental.Quote;
-import rental.Reservation;
+import rental.*;
 
 public class Client extends AbstractTestBooking {
-	
+
+	public static CarRentalCompanyInterface crci;
+
 	/********
 	 * MAIN *
 	 ********/
@@ -15,10 +20,23 @@ public class Client extends AbstractTestBooking {
 	public static void main(String[] args) throws Exception {
 		
 		String carRentalCompanyName = "Hertz";
-		
+
+		System.setSecurityManager(null);
+
+		try {
+			Registry registry = LocateRegistry.getRegistry();
+			crci = (CarRentalCompanyInterface) registry.lookup(carRentalCompanyName);
+		} catch(Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}
+
+
 		// An example reservation scenario on car rental company 'Hertz' would be...
 		Client client = new Client("simpleTrips", carRentalCompanyName);
 		client.run();
+
+        System.out.println(crci.getNumberOfReservationsForCarType("Special"));
 	}
 	
 	/***************
@@ -27,8 +45,6 @@ public class Client extends AbstractTestBooking {
 	
 	public Client(String scriptFile, String carRentalCompanyName) {
 		super(scriptFile);
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("TODO");
 	}
 	
 	/**
@@ -44,8 +60,11 @@ public class Client extends AbstractTestBooking {
 	 */
 	@Override
 	protected void checkForAvailableCarTypes(Date start, Date end) throws Exception {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("TODO");
+		try {
+			crci.getAvailableCarTypes(start, end);
+		} catch (RemoteException e) {
+            e.printStackTrace();
+        }
 	}
 
 	/**
@@ -67,10 +86,19 @@ public class Client extends AbstractTestBooking {
 	 * 			if things go wrong, throw exception
 	 */
 	@Override
-	protected Quote createQuote(String clientName, Date start, Date end,
-			String carType, String region) throws Exception {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("TODO");
+	protected Quote createQuote(String clientName, Date start, Date end, String carType, String region) throws Exception {
+		Quote q = null;
+
+		try {
+			ReservationConstraints constraints = new ReservationConstraints(start, end, carType, region);
+			q = crci.createQuote(constraints, clientName);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (ReservationException e) {
+            System.out.println(e.getMessage());
+        }
+
+		return q;
 	}
 
 	/**
@@ -85,8 +113,17 @@ public class Client extends AbstractTestBooking {
 	 */
 	@Override
 	protected Reservation confirmQuote(Quote quote) throws Exception {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("TODO");
+		Reservation r = null;
+
+		try {
+			r = crci.confirmQuote(quote);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (ReservationException e) {
+            System.out.println(e.getMessage());
+        }
+
+		return r;
 	}
 	
 	/**
@@ -101,8 +138,21 @@ public class Client extends AbstractTestBooking {
 	 */
 	@Override
 	protected List<Reservation> getReservationsByRenter(String clientName) throws Exception {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("TODO");
+		List<Reservation> reservationList = new ArrayList<>();
+
+		try {
+			reservationList.addAll(crci.getReservationsByRenter(clientName));
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+
+		for (Reservation res : reservationList) {
+            System.out.printf(String.format("CarType: %s CarID: %d Reservation from: %s to %s Price: %.2f",
+                                            res.getCarType(), res.getCarId(), res.getStartDate().toString(),
+                                            res.getEndDate().toString(), res.getRentalPrice()));
+        }
+
+		return reservationList;
 	}
 
 	/**
@@ -117,7 +167,14 @@ public class Client extends AbstractTestBooking {
 	 */
 	@Override
 	protected int getNumberOfReservationsForCarType(String carType) throws Exception {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("TODO");
+		int number = 0;
+
+		try {
+			number = crci.getNumberOfReservationsForCarType(carType);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+
+		return number;
 	}
 }

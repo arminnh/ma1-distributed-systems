@@ -1,10 +1,11 @@
 package rental;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Car {
+public class Car implements Serializable{
 
     private int id;
     private CarType type;
@@ -59,5 +60,20 @@ public class Car {
     public void removeReservation(Reservation reservation) {
         // equals-method for Reservation is required!
         reservations.remove(reservation);
+    }
+
+    public List<Reservation> getReservationsByRenter(String name) {
+        List<Reservation> r = new ArrayList<>();
+
+        for (Reservation res : reservations) {
+            if (res.getCarRenter().equals(name))
+                r.add(res);
+        }
+
+        return r;
+    }
+
+    public int getNumberOfReservations() {
+        return reservations.size();
     }
 }
