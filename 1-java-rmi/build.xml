@@ -62,10 +62,10 @@
   </target>
 
   <target name="run.both">
-	<java classname="server.Server">	
+	<java classname="${main.server}">	
 		<classpath refid="cp" />
 	</java>
-	<java classname="client.Client">	
+	<java classname="${main.client}">	
 		<classpath refid="cp" />
 	</java>
   </target>
