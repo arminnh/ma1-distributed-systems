@@ -19,7 +19,7 @@
   <property name="zip.filename" value="rmi1" />
   <!--
     ********************************************************
-       Please DO NOT CHANGE any code below this line.
+       We had to , to make the distributed setup work
 	******************************************************** -->
 
   <target name="init" >
@@ -55,11 +55,6 @@
   </target>
 
 
-  <target name="run.both">
-	<java classname="${main.server}">	
-		<classpath refid="cp" />
-	</java>
-  </target>
   
   <target name="zip">
 		<delete file="${zip.filename}.zip" quiet="true"/>
@@ -73,6 +68,4 @@
 		</zip>
   </target>
   
-  <target name="run" depends="compile,registry.start,run.both,registry.stop"/>
-  <target name="run-wo-compile" depends="registry.start,run.both,registry.stop" />
 </project>

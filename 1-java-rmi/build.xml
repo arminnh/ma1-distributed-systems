@@ -17,7 +17,7 @@
     ******************************************************** -->
   <property name="main.client" value="client.Client" />
   <property name="main.server" value="rental.RentalServer" />
-  <property name="zip.filename" value="rmi1" />
+  <property name="zip.filename" value="jago.gyselinck" />
   <!--
     ********************************************************
        Please DO NOT CHANGE any code below this line.

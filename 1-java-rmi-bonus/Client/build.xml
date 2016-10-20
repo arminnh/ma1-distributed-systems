@@ -22,7 +22,8 @@
   <property name="zip.filename" value="rmi1" />
   <!--
     ********************************************************
-       Please DO NOT CHANGE any code below this line.
+    we had to change things here to  make the distributed setup work
+
 	******************************************************** -->
 
   <target name="init" >
@@ -33,7 +34,11 @@
   </target>
 
   <target name="compile" depends="init">
-    <javac includeantruntime="false" srcdir="${src}" destdir="${build}"/>
+    <javac includeantruntime="false" srcdir="${src}" destdir="${build}">
+      <classpath>
+        <pathelement path="lib/rental.jar"/>
+      </classpath>
+    </javac>
   </target>
 
   <target name="registry.start">
@@ -55,12 +60,7 @@
   <target name="run.clientonly">
 	<java classname="${main.client}">
 		<classpath refid="cp" />
-	</java>
-  </target>
-
-  <target name="run.both">
-	<java classname="${main.client}">
-		<classpath refid="cp" />
+		<arg line="${args}"/>
 	</java>
   </target>
 
@@ -76,6 +76,4 @@
 		</zip>
   </target>
 
-  <target name="run" depends="compile,registry.start,run.both,registry.stop"/>
-  <target name="run-wo-compile" depends="registry.start,run.both,registry.stop" />
 </project>
