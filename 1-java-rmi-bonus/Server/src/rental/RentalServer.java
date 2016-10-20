@@ -27,7 +27,7 @@ public class RentalServer {
 			Registry registry = LocateRegistry.getRegistry();
 			registry.rebind(data.name, crci);
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			//System.out.println(e.getMessage());
 			e.printStackTrace();
 		}
 	}

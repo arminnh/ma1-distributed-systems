@@ -5,8 +5,8 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
+import java.util.List;
 import rental.*;
 
 public class Client extends AbstractTestBooking {
@@ -24,7 +24,7 @@ public class Client extends AbstractTestBooking {
 		System.setSecurityManager(null);
 
 		try {
-			Registry registry = LocateRegistry.getRegistry();
+			Registry registry = LocateRegistry.getRegistry(args[0]);
 			crci = (CarRentalCompanyInterface) registry.lookup(carRentalCompanyName);
 		} catch(Exception e) {
 			System.out.println(e.getMessage());
