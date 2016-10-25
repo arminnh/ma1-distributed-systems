@@ -157,6 +157,7 @@ public abstract class AbstractTestAgency<ReservationSession, ManagerSession> ext
             String type = scriptLineTokens.nextToken();
             String region = scriptLineTokens.nextToken();
             try {
+       
                 addQuoteToSession(session, name, startDate, endDate, type, region);
    			} catch (Exception e) { throw new ApplicationException(e); }
 		} else if (cmd.equals("BF")){

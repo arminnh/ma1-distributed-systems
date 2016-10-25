@@ -12,3 +12,14 @@
 hs_err_pid*
 
 .idea/
+/1-JEE/CarRental/nbproject/private/
+/1-JEE/CarRental-lib/build/
+/1-JEE/CarRental-client/nbproject/private/
+/1-JEE/CarRental-lib/nbproject/private/
+/1-JEE/CarRental-ejb/nbproject/private/
+/1-JEE/CarRental-client/build/
+/1-JEE/CarRental-lib/dist/
+/1-JEE/CarRental-ejb/build/
+/1-JEE/CarRental/build/
+/1-JEE/CarRental-client/dist/
+/1-JEE/CarRental-ejb/dist/
