@@ -27,12 +27,7 @@ public class CarRentalSession implements CarRentalSessionRemote {
     @Override
     public void createQuote(String renter, ReservationConstraints rc) throws ReservationException {
         CarRentalCompany crc = null;
-        Quote q = null;
-        
-        /* If we do not account for one car company being out active in a region
-           but not having a car, reservations might fail and the expected totals
-           will be wrong :( */
-        
+        Quote q = null;        
         
         for(CarRentalCompany c : RentalStore.getRentals().values()) {
             if(c.hasRegion(rc.getRegion())){
