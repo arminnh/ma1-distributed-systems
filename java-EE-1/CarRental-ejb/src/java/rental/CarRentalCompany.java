@@ -127,7 +127,7 @@ public class CarRentalCompany {
                         new Object[]{name, guest, constraints.toString()});
 		
 		
-		if(this.regions.contains(constraints.getRegion()) || !isAvailable(constraints.getCarType(), constraints.getStartDate(), constraints.getEndDate()))
+		if(!this.regions.contains(constraints.getRegion()) || !isAvailable(constraints.getCarType(), constraints.getStartDate(), constraints.getEndDate()))
 			throw new ReservationException("<" + name
 				+ "> No cars available to satisfy the given constraints.");
 		

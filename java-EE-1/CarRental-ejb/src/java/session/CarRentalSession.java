@@ -27,18 +27,28 @@ public class CarRentalSession implements CarRentalSessionRemote {
     @Override
     public void createQuote(String renter, ReservationConstraints rc) throws ReservationException {
         CarRentalCompany crc = null;
+        Quote q = null;
+        
+        /* If we do not account for one car company being out active in a region
+           but not having a car, reservations might fail and the expected totals
+           will be wrong :( */
+        
         
         for(CarRentalCompany c : RentalStore.getRentals().values()) {
             if(c.hasRegion(rc.getRegion())){
                 crc = c;
-                break;
+                try{
+                    q = crc.createQuote(rc, renter);
+                    break;
+                } catch (ReservationException e) {
+                }
             }
         }
         
-        if(crc != null) {
-            quotes.add(crc.createQuote(rc, renter));
+        if(crc != null && q != null) {
+            quotes.add(q);
         } else {
-            throw new ReservationException("No companies in region " + rc.getRegion());
+            throw new ReservationException("No companies in region " + rc.getRegion() + " that satisfy the constraints.");
         }  
     }
     
@@ -72,6 +82,7 @@ public class CarRentalSession implements CarRentalSessionRemote {
         return reservations;
     }
     
+    @Override
     public Set<CarType> checkForAvailableCarTypes(Date start, Date end){
         Set<CarType> availableCars = new HashSet<CarType>();
         
@@ -80,8 +91,6 @@ public class CarRentalSession implements CarRentalSessionRemote {
         }
         
         return availableCars;
-    }
-    
-    
+    }  
     
 }

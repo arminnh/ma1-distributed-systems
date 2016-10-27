@@ -26,7 +26,8 @@ public class ManagerSession implements ManagerSessionRemote {
         int reservationCount = 0;
         
         for(Car c: crc.getCars()){
-            reservationCount += c.getReservations().size();
+            if(c.getType().getName().equals(carType))
+                reservationCount += c.getReservations().size();
         }
         
         return reservationCount;
