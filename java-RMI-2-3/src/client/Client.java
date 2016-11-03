@@ -33,8 +33,8 @@ public class Client extends AbstractTestManagement<ReservationSessionRemote, Man
 
             // Let's just assume that there exist managers that add the companies to the rental agency
             ManagerSessionRemote msr = sessionManagerRemote.getManagerSession("Manager");
-            msr.registerCompany((CarRentalCompanyRemote) registry.lookup("hertz"));
-            msr.registerCompany((CarRentalCompanyRemote) registry.lookup("dockx"));
+            msr.registerCompany((CarRentalCompanyRemote) registry.lookup("Hertz"));
+            msr.registerCompany((CarRentalCompanyRemote) registry.lookup("Dockx"));
 
         } catch (Exception e) {
             System.out.println("An exception occurred in the client.");

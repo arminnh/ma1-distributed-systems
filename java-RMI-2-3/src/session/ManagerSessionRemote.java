@@ -5,6 +5,7 @@
  */
 package session;
 
+import java.io.Serializable;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Set;
@@ -12,7 +13,7 @@ import java.util.Set;
 import rental.CarRentalCompanyRemote;
 import rental.CarType;
 
-public interface ManagerSessionRemote extends Remote {
+public interface ManagerSessionRemote extends Remote,Serializable {
 
     int getNumberOfReservationsForCarType(String carRentalName, String carType) throws RemoteException;
 

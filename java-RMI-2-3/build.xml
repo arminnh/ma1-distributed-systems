@@ -1,117 +1,97 @@
 <project name="RMI2" default="run" basedir=".">
-  <description>This is build/run script for the RMI2/3 assignment. </description>
+    <description>This is build/run script for the RMI2/3 assignment.</description>
 
-  <property name="src" location="src"/>
-  <property name="build" location="bin"/>
-  <path id="cp">
-	<pathelement location="${build}"/>
-  </path>
+    <property name="src" location="src"/>
+    <property name="build" location="bin"/>
+    <path id="cp">
+        <pathelement location="${build}"/>
+    </path>
 
-  <!--
-    ********************************************************
-       Please set the following two parameters to point 
-	   to your server's and client's Main-method classes
-	   Example: "client.Client"
-	            => Package: client Classname: Client
-	   The third parameter is filename for the final zip.	   
-    ******************************************************** -->
-  <property name="main.client" value="client.Client" />
+    <!--
+      ********************************************************
+         Please set the following two parameters to point
+         to your server's and client's Main-method classes
+         Example: "client.Client"
+                  => Package: client Classname: Client
+         The third parameter is filename for the final zip.
+      ******************************************************** -->
+    <property name="main.client" value="client.Client"/>
 
-  <property name="CRC.server" value="rental.CarRentalServer" />
-  
-  <property name="main.nameserver" value="nameserver.NameServer"/>
+    <property name="main.carrentalcompany" value="rental.CarRentalServer"/>
 
-  <property name="zip.filename" value="rmi2" />
-  <!--
-    ********************************************************
-       Please DO NOT CHANGE any code below this line.
-	******************************************************** -->
+    <property name="main.nameserver" value="nameserver.NameServer"/>
 
-  <target name="init" >
-	<delete dir="${build}" quiet="true"/>
-    <mkdir dir="${build}"/>
-	<delete dir="${dist}" quiet="true"/>
-    <mkdir dir="${build}"/>
-  </target>
+    <property name="zip.filename" value="rmi2"/>
+    <!--
+      ********************************************************
+         Please DO NOT CHANGE any code below this line.
+      ******************************************************** -->
 
-  <target name="compile" depends="init">
-    <javac includeantruntime="false" srcdir="${src}" destdir="${build}"/>
-  </target>
-  
-  <target name="registry.start">
-	<exec spawn="true" executable="rmiregistry" dir="${build}"/>
-	<sleep milliseconds="500"/>
-  </target>
+    <target name="init">
+        <delete dir="${build}" quiet="true"/>
+        <mkdir dir="${build}"/>
+        <delete dir="${dist}" quiet="true"/>
+        <mkdir dir="${build}"/>
+    </target>
 
-  <target name="registry.stop">
-	<exec osfamily="windows" executable="taskkill">
-	  <arg value="/IM"/>
-	  <arg value="rmiregistry.exe"/>
-	  <arg value="/F"/>
-	</exec>
-	<exec osfamily="unix" executable="killall">
-		<arg value="rmiregistry"/>
-	</exec>
-  </target>
-    
-  <target name="run.serveronly">
-	<java fork="true" classname="${main.server}">	
-		<classpath refid="cp" />
-		<arg value="hertz.csv"/>
-	</java>
-  </target>
+    <target name="compile" depends="init">
+        <javac includeantruntime="false" srcdir="${src}" destdir="${build}"/>
+    </target>
 
-  <target name="run.clientonly">
-	<java classname="${main.client}">	
-		<classpath refid="cp" />
-	</java>
-  </target>
+    <target name="registry.start">
+        <exec spawn="true" executable="rmiregistry" dir="${build}"/>
+        <sleep milliseconds="500"/>
+    </target>
 
-  <target name="run.both">
-	<java classname="${main.server}">	
-		<classpath refid="cp" />
-	</java>
-	<java classname="${main.client}">	
-		<classpath refid="cp" />
-	</java>
-  </target>
-  
-  <target name="zip">
-		<delete file="${zip.filename}.zip" quiet="true"/>
-		<zip destfile="${zip.filename}.zip" update="false">
-			<zipfileset dir="../">
-				<include name="*rips"/>
-				<include name="*csv"/>
-				<include name="build.xml" />
-			</zipfileset>
-			<zipfileset dir="" prefix="src"/>
-		</zip>
-  </target>
-  
-  <target name="run" depends="compile,registry.start,run.both,registry.stop"/>
-  <target name="run-wo-compile" depends="registry.start,run.both,registry.stop" />
+    <target name="registry.stop">
+        <exec osfamily="windows" executable="taskkill">
+            <arg value="/IM"/>
+            <arg value="rmiregistry.exe"/>
+            <arg value="/F"/>
+        </exec>
+        <exec osfamily="unix" executable="killall">
+            <arg value="rmiregistry"/>
+        </exec>
+    </target>
 
-	<!-- custom targets -->
+    <target name="zip">
+        <delete file="${zip.filename}.zip" quiet="true"/>
+        <zip destfile="${zip.filename}.zip" update="false">
+            <zipfileset dir="../">
+                <include name="*rips"/>
+                <include name="*csv"/>
+                <include name="build.xml"/>
+            </zipfileset>
+            <zipfileset dir="" prefix="src"/>
+        </zip>
+    </target>
 
-    <!-- TEST TARGET FOR COMPANIES -->
-    <target name="run-companies-only" depends="init,compile,registry.start, run.companies, registry.stop"/>
+    <!-- Custom targets -->
+
+    <target name="run.nameserver">
+        <java classname="${main.nameserver}">
+            <classpath refid="cp"/>
+        </java>
+    </target>
+
+    <target name="run.client">
+        <java classname="${main.client}">
+            <classpath refid="cp"/>
+        </java>
+    </target>
 
     <target name="run.companies">
-        <java classname="${CRC.server}">
-            <classpath refid="cp" />
+        <java classname="${main.carrentalcompany}">
+            <classpath refid="cp"/>
             <arg value="hertz.csv"/>
         </java>
-        <java classname="${CRC.server}">
-            <classpath refid="cp" />
+        <java classname="${main.carrentalcompany}">
+            <classpath refid="cp"/>
             <arg value="dockx.csv"/>
         </java>
     </target>
 
-    <target name="run.agency">
-        <java fork="true" classname="${main.nameserver}">
-            <classpath refid="cp" />
-        </java>
-    </target>
+    <target name="run" depends="compile,registry.start,run.nameserver, run.companies, run.client, registry.stop"/>
 
 
 </project>

@@ -84,7 +84,7 @@ public class ManagerSession implements ManagerSessionRemote {
 
         for (Car c : crcr.getCars()) {
             for (Reservation r : c.getReservations()) {
-                if (r.getStartDate().getYear() == year) {
+                if (r.getStartDate().getYear() + 1900 == year) {
                     if (rescounts.containsKey(c.getType())) {
                         rescounts.put(c.getType(), rescounts.get(c.getType()) + 1);
                     } else {
@@ -103,6 +103,9 @@ public class ManagerSession implements ManagerSessionRemote {
             }
         }
 
+        if(maxEntry == null) {
+            System.out.println("Oh boy you fucked up " + String.valueOf(rescounts.size()));
+        }
         return maxEntry.getKey();
     }
 }

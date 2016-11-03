@@ -1,5 +1,7 @@
 package session;
 
+import java.io.Serializable;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.List;
@@ -11,7 +13,7 @@ import rental.Reservation;
 import rental.ReservationConstraints;
 import rental.ReservationException;
 
-public interface ReservationSessionRemote {
+public interface ReservationSessionRemote extends Remote,Serializable {
 
     Set<String> getAllRentalCompanies() throws RemoteException;
 
