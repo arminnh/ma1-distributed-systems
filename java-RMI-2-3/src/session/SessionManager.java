@@ -1,9 +1,4 @@
-package nameserver;
-
-import session.ManagerSession;
-import session.ManagerSessionRemote;
-import session.ReservationSession;
-import session.ReservationSessionRemote;
+package session;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +6,7 @@ import java.util.Map;
 public class SessionManager implements SessionManagerRemote {
 
     private static Map<String, ReservationSession> reservationSessionMap = new HashMap<>();
-    private static Map<String, ManagerSession>     managerSessionMap = new HashMap<>();
+    private static Map<String, ManagerSession> managerSessionMap = new HashMap<>();
 
     @Override
     public ReservationSessionRemote getRentalSession(String name) {

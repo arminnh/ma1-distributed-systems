@@ -11,9 +11,11 @@ public interface CarRentalCompanyRemote extends Remote, Serializable {
     Set<CarType> getAvailableCarTypes(Date start, Date end) throws RemoteException;
 
     Quote createQuote(ReservationConstraints constraints, String guest) throws ReservationException, RemoteException;
+
     Reservation confirmQuote(Quote quote) throws ReservationException, RemoteException;
 
     void cancelReservation(Reservation res) throws RemoteException;
+
     Set<Reservation> getReservationsBy(String renter) throws RemoteException;
 
     String getName() throws RemoteException;

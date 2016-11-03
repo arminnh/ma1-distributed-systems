@@ -1,8 +1,12 @@
 package client;
 
-import nameserver.SessionManagerRemote;
-import session.*;
-import rental.*;
+import rental.CarType;
+import rental.Reservation;
+import rental.ReservationConstraints;
+import rental.CarRentalCompanyRemote;
+import session.ManagerSessionRemote;
+import session.ReservationSessionRemote;
+import session.SessionManagerRemote;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -25,12 +29,12 @@ public class Client extends AbstractTestManagement<ReservationSessionRemote, Man
 
         try {
             Registry registry = LocateRegistry.getRegistry();
-            sessionManagerRemote = (SessionManagerRemote) registry.lookup("RentalAgency");
+            sessionManagerRemote = (SessionManagerRemote) registry.lookup("NameServer");
 
             // Let's just assume that there exist managers that add the companies to the rental agency
             ManagerSessionRemote msr = sessionManagerRemote.getManagerSession("Manager");
-            msr.registerCompany( (CarRentalCompanyRemote) registry.lookup("hertz"));
-            msr.registerCompany( (CarRentalCompanyRemote) registry.lookup("dockx"));
+            msr.registerCompany((CarRentalCompanyRemote) registry.lookup("hertz"));
+            msr.registerCompany((CarRentalCompanyRemote) registry.lookup("dockx"));
 
         } catch (Exception e) {
             System.out.println("An exception occurred in the client.");
@@ -53,17 +57,16 @@ public class Client extends AbstractTestManagement<ReservationSessionRemote, Man
     /*
     * Methods that allow a client to make reservations.
      */
-
     @Override
     protected void checkForAvailableCarTypes(ReservationSessionRemote session, Date start, Date end) throws Exception {
-        for(CarType c: session.checkForAvailableCarTypes(start, end)){
+        for (CarType c : session.checkForAvailableCarTypes(start, end)) {
             System.out.println(c.toString());
         }
     }
 
     @Override
     protected void addQuoteToSession(ReservationSessionRemote session, String name, Date start, Date end, String carType, String region) throws Exception {
-        ReservationConstraints rc = new ReservationConstraints(start,end,carType,region);
+        ReservationConstraints rc = new ReservationConstraints(start, end, carType, region);
         session.createQuote(name, rc);
     }
 
@@ -74,7 +77,7 @@ public class Client extends AbstractTestManagement<ReservationSessionRemote, Man
 
     @Override
     protected String getCheapestCarType(ReservationSessionRemote reservationSessionRemote, Date start, Date end, String region) throws Exception {
-        return reservationSessionRemote.getCheapestCarType(start,end,region);
+        return reservationSessionRemote.getCheapestCarType(start, end, region);
     }
 
     /*
@@ -87,7 +90,7 @@ public class Client extends AbstractTestManagement<ReservationSessionRemote, Man
 
     @Override
     protected CarType getMostPopularCarTypeIn(ManagerSessionRemote ms, String carRentalCompanyName, int year) throws Exception {
-        return ms.getMostPopularCarTypeIn(carRentalCompanyName,year);
+        return ms.getMostPopularCarTypeIn(carRentalCompanyName, year);
     }
 
     @Override

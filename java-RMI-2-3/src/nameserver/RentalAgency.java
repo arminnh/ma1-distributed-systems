@@ -1,23 +1,14 @@
 package nameserver;
 
-import rental.Car;
-import rental.CarRentalCompany;
 import rental.CarRentalCompanyRemote;
-import session.ReservationSession;
-import session.ReservationSessionRemote;
-import session.ManagerSession;
-import session.ManagerSessionRemote;
 
 import java.rmi.RemoteException;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 public class RentalAgency {
 
     private static Map<String, CarRentalCompanyRemote> rentals = new HashMap<>();
-
 
     public static CarRentalCompanyRemote getRental(String company) {
         CarRentalCompanyRemote out = RentalAgency.getRentals().get(company);
@@ -26,14 +17,14 @@ public class RentalAgency {
         }
         return out;
     }
-    
-    public static synchronized Map<String, CarRentalCompanyRemote> getRentals(){
+
+    public static synchronized Map<String, CarRentalCompanyRemote> getRentals() {
         return rentals;
     }
 
-    public static void registerCompany(CarRentalCompanyRemote cr) throws RemoteException{
+    public static void registerCompany(CarRentalCompanyRemote cr) throws RemoteException {
         String cname = cr.getName();
-        if(rentals.containsKey(cname)) {
+        if (rentals.containsKey(cname)) {
             System.out.println("Company with name " + cr.getName() + " is already registered");
         } else {
             rentals.put(cr.getName(), cr);
@@ -42,7 +33,7 @@ public class RentalAgency {
     }
 
     public static void unregisterCompany(String name) {
-        if(rentals.containsKey(name)) {
+        if (rentals.containsKey(name)) {
             rentals.remove(name);
             System.out.println("unregistered company " + name);
         } else {

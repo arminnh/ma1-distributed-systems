@@ -21,10 +21,10 @@ public class CarRentalServer {
             logger.log(Level.SEVERE, "No data file found as argument, aborting...");
         } else {
             CarRentalCompany crc = loadRental(args[0]);
-            try{
+            try {
                 Registry registry = LocateRegistry.getRegistry();
-                CarRentalCompanyRemote crcr = (CarRentalCompanyRemote) UnicastRemoteObject.exportObject(crc,0);
-                registry.rebind(crc.getName(),crcr);
+                CarRentalCompanyRemote crcr = (CarRentalCompanyRemote) UnicastRemoteObject.exportObject(crc, 0);
+                registry.rebind(crc.getName(), crcr);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -89,6 +89,6 @@ public class CarRentalServer {
     static class CrcData {
         public List<Car> cars = new LinkedList<Car>();
         public String name;
-        public List<String> regions =  new LinkedList<String>();
+        public List<String> regions = new LinkedList<String>();
     }
 }
