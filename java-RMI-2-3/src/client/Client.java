@@ -32,7 +32,7 @@ public class Client extends AbstractTestManagement<ReservationSessionRemote, Man
             this.rentalAgency = (RentalAgencyRemote) registry.lookup("RentalAgency");
 
             // Let's just assume that there exist managers that add the companies to the rental agency
-            ManagerSessionRemote msr = this.rentalAgency.getManagerSession("Manager");
+            ManagerSessionRemote msr = this.rentalAgency.getManagerSession();
             msr.registerCompany((CarRentalCompanyRemote) registry.lookup("Hertz"));
             msr.registerCompany((CarRentalCompanyRemote) registry.lookup("Dockx"));
 
@@ -50,9 +50,8 @@ public class Client extends AbstractTestManagement<ReservationSessionRemote, Man
     @Override
     protected ManagerSessionRemote getNewManagerSession(String name, String carRentalName) throws Exception {
         /* TODO: ? carRentalName is unused. */
-        return this.rentalAgency.getManagerSession(name);
+        return this.rentalAgency.getManagerSession();
     }
-
 
     /*
     * Methods that allow a client to make reservations.

@@ -11,7 +11,7 @@ public interface RentalAgencyRemote extends Remote, Serializable {
 
     ReservationSessionRemote getRentalSession(String name) throws RemoteException;
 
-    ManagerSessionRemote getManagerSession(String name) throws RemoteException;
+    ManagerSessionRemote getManagerSession() throws RemoteException;
 
-    void removeSession() throws RemoteException;
+    void removeReservationSession(String name) throws RemoteException;
 }

@@ -18,7 +18,7 @@ import rental.ReservationException;
 
 public class ReservationSession extends UnicastRemoteObject implements ReservationSessionRemote {
 
-    List<Quote> quotes = new ArrayList<Quote>();
+    private List<Quote> quotes = new ArrayList<Quote>();
 
     public ReservationSession () throws RemoteException {}
 
@@ -28,12 +28,12 @@ public class ReservationSession extends UnicastRemoteObject implements Reservati
     }
 
     @Override
-    public List<Quote> getCurrentQuotes()  throws RemoteException {
+    public synchronized List<Quote> getCurrentQuotes() throws RemoteException {
         return quotes;
     }
 
     @Override
-    public void createQuote(String renter, ReservationConstraints rc) throws ReservationException, RemoteException {
+    public synchronized void createQuote(String renter, ReservationConstraints rc) throws ReservationException, RemoteException {
         CarRentalCompanyRemote crc = null;
         Quote q = null;
 
@@ -56,7 +56,7 @@ public class ReservationSession extends UnicastRemoteObject implements Reservati
     }
 
     @Override
-    public List<Reservation> confirmQuotes() throws ReservationException, RemoteException {
+    public synchronized List<Reservation> confirmQuotes() throws ReservationException, RemoteException {
         List<Reservation> reservations = new ArrayList<Reservation>();
 
         try {
@@ -86,7 +86,7 @@ public class ReservationSession extends UnicastRemoteObject implements Reservati
     }
 
     @Override
-    public Set<CarType> checkForAvailableCarTypes(Date start, Date end) throws RemoteException {
+    public synchronized Set<CarType> checkForAvailableCarTypes(Date start, Date end) throws RemoteException {
         Set<CarType> availableCars = new HashSet<CarType>();
 
         for (CarRentalCompanyRemote crc : RentalAgency.getRentals().values()) {

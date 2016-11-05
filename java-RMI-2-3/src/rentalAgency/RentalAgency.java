@@ -9,12 +9,13 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class RentalAgency implements RentalAgencyRemote {
 
-    private static Map<String, CarRentalCompanyRemote> rentals = new HashMap<>();
-    private Map<String, ManagerSession> managerSessionMap = new HashMap<>();
+    private static Map<String, CarRentalCompanyRemote> rentals = new ConcurrentHashMap<>();
     private Map<String, ReservationSession> reservationSessionMap = new HashMap<>();
+    private ManagerSession managerSession;
 
     public static void main(String[] args) throws Exception {
 
@@ -43,19 +44,20 @@ public class RentalAgency implements RentalAgencyRemote {
     }
 
     @Override
-    public ManagerSessionRemote getManagerSession(String name) throws RemoteException {
-        if (!managerSessionMap.containsKey(name)) {
-            managerSessionMap.put(name, new ManagerSession());
+    public ManagerSessionRemote getManagerSession() throws RemoteException {
+        if (this.managerSession == null) {
+            this.managerSession = new ManagerSession();
         }
-        return managerSessionMap.get(name);
+        return managerSession;
     }
 
     @Override
-    public void removeSession() {
-        //todo
+    public void removeReservationSession(String name) {
+        // TODO: use this somewhere
+        reservationSessionMap.remove(name);
     }
 
-    public static CarRentalCompanyRemote getRental(String company) {
+    public static synchronized CarRentalCompanyRemote getRental(String company) {
         CarRentalCompanyRemote out = RentalAgency.getRentals().get(company);
         if (out == null) {
             throw new IllegalArgumentException("Company doesn't exist!: " + company);
@@ -67,7 +69,7 @@ public class RentalAgency implements RentalAgencyRemote {
         return rentals;
     }
 
-    public static void registerCompany(CarRentalCompanyRemote cr) throws RemoteException {
+    public static synchronized void registerCompany(CarRentalCompanyRemote cr) throws RemoteException {
         String cname = cr.getName();
         if (rentals.containsKey(cname)) {
             System.out.println("Company with name " + cr.getName() + " is already registered");
@@ -77,7 +79,7 @@ public class RentalAgency implements RentalAgencyRemote {
         }
     }
 
-    public static void unregisterCompany(String name) {
+    public static synchronized void unregisterCompany(String name) {
         if (rentals.containsKey(name)) {
             rentals.remove(name);
             System.out.println("unregistered company " + name);
