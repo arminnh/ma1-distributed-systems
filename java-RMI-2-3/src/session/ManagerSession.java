@@ -1,21 +1,28 @@
 package session;
 
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import nameserver.RentalAgency;
+import rentalAgency.RentalAgency;
 import rental.Car;
 import rental.CarRentalCompanyRemote;
 import rental.CarType;
 import rental.Reservation;
 
-public class ManagerSession implements ManagerSessionRemote {
+public class ManagerSession extends UnicastRemoteObject implements ManagerSessionRemote {
+
+    private RentalAgency agency;
+
+    public ManagerSession(RentalAgency agency) throws RemoteException {
+        this.agency = agency;
+    }
 
     @Override
     public int getNumberOfReservationsForCarType(String carRentalName, String carType) throws RemoteException {
-        CarRentalCompanyRemote crc = RentalAgency.getRental(carRentalName);
+        CarRentalCompanyRemote crc = this.agency.getRental(carRentalName);
         int reservationCount = 0;
 
         for (Car c : crc.getCars()) {
@@ -30,7 +37,7 @@ public class ManagerSession implements ManagerSessionRemote {
     public Set<String> bestCustomer() throws RemoteException {
         /* Todo please make this more elegant. */
 
-        Map<String, CarRentalCompanyRemote> crcmap = RentalAgency.getRentals();
+        Map<String, CarRentalCompanyRemote> crcmap = this.agency.getRentals();
 
         Map<String, Integer> customerScore = new HashMap<String, Integer>();
 
@@ -69,17 +76,17 @@ public class ManagerSession implements ManagerSessionRemote {
 
     @Override
     public void registerCompany(CarRentalCompanyRemote remote) throws RemoteException {
-        RentalAgency.registerCompany(remote);
+        this.agency.registerCompany(remote);
     }
 
     @Override
     public void unregisterCompany(CarRentalCompanyRemote remote) throws RemoteException {
-        RentalAgency.unregisterCompany(remote.getName());
+        this.agency.unregisterCompany(remote.getName());
     }
 
     @Override
     public CarType getMostPopularCarTypeIn(String carRentalCompanyName, int year) throws RemoteException {
-        CarRentalCompanyRemote crcr = RentalAgency.getRental(carRentalCompanyName);
+        CarRentalCompanyRemote crcr = this.agency.getRental(carRentalCompanyName);
         Map<CarType, Integer> rescounts = new HashMap<>();
 
         for (Car c : crcr.getCars()) {

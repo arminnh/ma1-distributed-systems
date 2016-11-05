@@ -19,7 +19,7 @@
 
     <property name="main.carrentalcompany" value="rental.CarRentalServer"/>
 
-    <property name="main.nameserver" value="nameserver.NameServer"/>
+    <property name="main.rentalAgency" value="rentalAgency.RentalAgency"/>
 
     <property name="zip.filename" value="rmi2"/>
     <!--
@@ -68,8 +68,8 @@
 
     <!-- Custom targets -->
 
-    <target name="run.nameserver">
-        <java classname="${main.nameserver}">
+    <target name="run.rentalAgency">
+        <java classname="${main.rentalAgency}">
             <classpath refid="cp"/>
         </java>
     </target>
@@ -91,7 +91,7 @@
         </java>
     </target>
 
-    <target name="run" depends="compile,registry.start,run.nameserver, run.companies, run.client, registry.stop"/>
+    <target name="run" depends="compile, registry.start, run.rentalAgency, run.companies, run.client, registry.stop"/>
 
 
 </project>

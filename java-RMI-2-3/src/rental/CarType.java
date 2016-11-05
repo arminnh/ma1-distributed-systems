@@ -2,7 +2,7 @@ package rental;
 
 import java.io.Serializable;
 
-public class CarType implements Serializable{
+public class CarType implements Serializable {
     
     private String name;
     private int nbOfSeats;

@@ -13,7 +13,7 @@ import rental.Reservation;
 import rental.ReservationConstraints;
 import rental.ReservationException;
 
-public interface ReservationSessionRemote extends Remote,Serializable {
+public interface ReservationSessionRemote extends Remote, Serializable {
 
     Set<String> getAllRentalCompanies() throws RemoteException;
 

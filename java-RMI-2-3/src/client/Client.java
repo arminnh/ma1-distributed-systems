@@ -1,12 +1,12 @@
 package client;
 
+import rentalAgency.RentalAgencyRemote;
 import rental.CarType;
 import rental.Reservation;
 import rental.ReservationConstraints;
 import rental.CarRentalCompanyRemote;
 import session.ManagerSessionRemote;
 import session.ReservationSessionRemote;
-import session.SessionManagerRemote;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -16,7 +16,7 @@ import java.util.Set;
 
 public class Client extends AbstractTestManagement<ReservationSessionRemote, ManagerSessionRemote> {
 
-    private SessionManagerRemote sessionManagerRemote = null;
+    private RentalAgencyRemote rentalAgency = null;
 
     public static void main(String[] args) throws Exception {
 
@@ -29,10 +29,10 @@ public class Client extends AbstractTestManagement<ReservationSessionRemote, Man
 
         try {
             Registry registry = LocateRegistry.getRegistry();
-            sessionManagerRemote = (SessionManagerRemote) registry.lookup("NameServer");
+            this.rentalAgency = (RentalAgencyRemote) registry.lookup("RentalAgency");
 
             // Let's just assume that there exist managers that add the companies to the rental agency
-            ManagerSessionRemote msr = sessionManagerRemote.getManagerSession("Manager");
+            ManagerSessionRemote msr = this.rentalAgency.getManagerSession("Manager");
             msr.registerCompany((CarRentalCompanyRemote) registry.lookup("Hertz"));
             msr.registerCompany((CarRentalCompanyRemote) registry.lookup("Dockx"));
 
@@ -44,13 +44,13 @@ public class Client extends AbstractTestManagement<ReservationSessionRemote, Man
 
     @Override
     protected ReservationSessionRemote getNewReservationSession(String name) throws Exception {
-        return sessionManagerRemote.getRentalSession(name);
+        return this.rentalAgency.getRentalSession(name);
     }
 
     @Override
     protected ManagerSessionRemote getNewManagerSession(String name, String carRentalName) throws Exception {
         /* TODO: ? carRentalName is unused. */
-        return sessionManagerRemote.getManagerSession(name);
+        return this.rentalAgency.getManagerSession(name);
     }
 
 
