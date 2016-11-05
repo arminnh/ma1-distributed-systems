@@ -106,9 +106,6 @@ public class ManagerSession extends UnicastRemoteObject implements ManagerSessio
             }
         }
 
-        if(maxEntry == null) {
-            System.out.println("Oh boy you fucked up " + String.valueOf(rescounts.size()));
-        }
         return maxEntry.getKey();
     }
 }
