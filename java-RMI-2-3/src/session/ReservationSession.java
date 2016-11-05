@@ -19,19 +19,16 @@ import rental.ReservationException;
 public class ReservationSession extends UnicastRemoteObject implements ReservationSessionRemote {
 
     List<Quote> quotes = new ArrayList<Quote>();
-    private RentalAgency agency;
 
-    public ReservationSession(RentalAgency agency) throws RemoteException {
-        this.agency = agency;
-    }
-    
+    public ReservationSession () throws RemoteException {}
+
     @Override
-    public Set<String> getAllRentalCompanies() {
-        return new HashSet<String>(this.agency.getRentals().keySet());
+    public Set<String> getAllRentalCompanies() throws RemoteException {
+        return new HashSet<String>(RentalAgency.getRentals().keySet());
     }
 
     @Override
-    public List<Quote> getCurrentQuotes() {
+    public List<Quote> getCurrentQuotes()  throws RemoteException {
         return quotes;
     }
 
@@ -40,7 +37,7 @@ public class ReservationSession extends UnicastRemoteObject implements Reservati
         CarRentalCompanyRemote crc = null;
         Quote q = null;
 
-        for (CarRentalCompanyRemote c : this.agency.getRentals().values()) {
+        for (CarRentalCompanyRemote c : RentalAgency.getRentals().values()) {
             if (c.hasRegion(rc.getRegion())) {
                 crc = c;
                 try {
@@ -65,7 +62,7 @@ public class ReservationSession extends UnicastRemoteObject implements Reservati
         try {
 
             for (Quote q : quotes) {
-                CarRentalCompanyRemote crc = this.agency.getRental(q.getRentalCompany());
+                CarRentalCompanyRemote crc = RentalAgency.getRental(q.getRentalCompany());
                 reservations.add(crc.confirmQuote(q));
             }
 
@@ -74,7 +71,7 @@ public class ReservationSession extends UnicastRemoteObject implements Reservati
             System.out.println(e.toString());
 
             for (Reservation r : reservations) {
-                CarRentalCompanyRemote crc = this.agency.getRental(r.getRentalCompany());
+                CarRentalCompanyRemote crc = RentalAgency.getRental(r.getRentalCompany());
                 crc.cancelReservation(r);
             }
 
@@ -92,7 +89,7 @@ public class ReservationSession extends UnicastRemoteObject implements Reservati
     public Set<CarType> checkForAvailableCarTypes(Date start, Date end) throws RemoteException {
         Set<CarType> availableCars = new HashSet<CarType>();
 
-        for (CarRentalCompanyRemote crc : this.agency.getRentals().values()) {
+        for (CarRentalCompanyRemote crc : RentalAgency.getRentals().values()) {
             availableCars.addAll(crc.getAvailableCarTypes(start, end));
         }
 
@@ -103,7 +100,7 @@ public class ReservationSession extends UnicastRemoteObject implements Reservati
     public String getCheapestCarType(Date start, Date end, String region) throws RemoteException {
         List<CarType> cars = new ArrayList<>();
 
-        for (CarRentalCompanyRemote crc : this.agency.getRentals().values()) {
+        for (CarRentalCompanyRemote crc : RentalAgency.getRentals().values()) {
             if (crc.hasRegion(region)) {
                 cars.addAll(crc.getAvailableCarTypes(start, end));
             }

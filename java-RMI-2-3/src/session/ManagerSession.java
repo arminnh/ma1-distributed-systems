@@ -14,15 +14,11 @@ import rental.Reservation;
 
 public class ManagerSession extends UnicastRemoteObject implements ManagerSessionRemote {
 
-    private RentalAgency agency;
-
-    public ManagerSession(RentalAgency agency) throws RemoteException {
-        this.agency = agency;
-    }
+    public ManagerSession () throws RemoteException {}
 
     @Override
     public int getNumberOfReservationsForCarType(String carRentalName, String carType) throws RemoteException {
-        CarRentalCompanyRemote crc = this.agency.getRental(carRentalName);
+        CarRentalCompanyRemote crc = RentalAgency.getRental(carRentalName);
         int reservationCount = 0;
 
         for (Car c : crc.getCars()) {
@@ -37,7 +33,7 @@ public class ManagerSession extends UnicastRemoteObject implements ManagerSessio
     public Set<String> bestCustomer() throws RemoteException {
         /* Todo please make this more elegant. */
 
-        Map<String, CarRentalCompanyRemote> crcmap = this.agency.getRentals();
+        Map<String, CarRentalCompanyRemote> crcmap = RentalAgency.getRentals();
 
         Map<String, Integer> customerScore = new HashMap<String, Integer>();
 
@@ -76,17 +72,17 @@ public class ManagerSession extends UnicastRemoteObject implements ManagerSessio
 
     @Override
     public void registerCompany(CarRentalCompanyRemote remote) throws RemoteException {
-        this.agency.registerCompany(remote);
+        RentalAgency.registerCompany(remote);
     }
 
     @Override
     public void unregisterCompany(CarRentalCompanyRemote remote) throws RemoteException {
-        this.agency.unregisterCompany(remote.getName());
+        RentalAgency.unregisterCompany(remote.getName());
     }
 
     @Override
     public CarType getMostPopularCarTypeIn(String carRentalCompanyName, int year) throws RemoteException {
-        CarRentalCompanyRemote crcr = this.agency.getRental(carRentalCompanyName);
+        CarRentalCompanyRemote crcr = RentalAgency.getRental(carRentalCompanyName);
         Map<CarType, Integer> rescounts = new HashMap<>();
 
         for (Car c : crcr.getCars()) {
