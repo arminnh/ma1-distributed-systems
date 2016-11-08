@@ -19,9 +19,9 @@ public class Client extends AbstractTestManagement<ReservationSessionRemote, Man
     private RentalAgencyRemote rentalAgency = null;
 
     public static void main(String[] args) throws Exception {
-
         Client client = new Client("trips");
         client.run();
+        client.clearSessions();
     }
 
     public Client(String scriptFile) {
@@ -39,6 +39,12 @@ public class Client extends AbstractTestManagement<ReservationSessionRemote, Man
         } catch (Exception e) {
             System.out.println("An exception occurred in the client.");
             e.printStackTrace();
+        }
+    }
+
+    private void clearSessions() throws Exception {
+        for (String name : this.sessions.keySet()) {
+            this.rentalAgency.removeReservationSession(name);
         }
     }
 

@@ -68,19 +68,30 @@
 
     <!-- Custom targets -->
 
-    <target name="run.rentalAgency">
+    <target name="run.serveronly">
         <java classname="${main.rentalAgency}">
             <classpath refid="cp"/>
         </java>
+        <java classname="${main.carrentalcompany}">
+            <classpath refid="cp"/>
+            <arg value="hertz.csv"/>
+        </java>
+        <java fork="true" classname="${main.carrentalcompany}">
+            <classpath refid="cp"/>
+            <arg value="dockx.csv"/>
+        </java>
     </target>
 
-    <target name="run.client">
+    <target name="run.clientonly">
         <java classname="${main.client}">
             <classpath refid="cp"/>
         </java>
     </target>
 
-    <target name="run.companies">
+    <target name="run.both">
+        <java classname="${main.rentalAgency}">
+            <classpath refid="cp"/>
+        </java>
         <java classname="${main.carrentalcompany}">
             <classpath refid="cp"/>
             <arg value="hertz.csv"/>
@@ -89,9 +100,13 @@
             <classpath refid="cp"/>
             <arg value="dockx.csv"/>
         </java>
+        <java classname="${main.client}">
+            <classpath refid="cp"/>
+        </java>
     </target>
 
-    <target name="run" depends="compile, registry.start, run.rentalAgency, run.companies, run.client, registry.stop"/>
+    <target name="run" depends="compile, registry.start, run.both, registry.stop"/>
+    <target name="run-wo-compile" depends="registry.start, run.both, registry.stop"/>
 
 
 </project>
