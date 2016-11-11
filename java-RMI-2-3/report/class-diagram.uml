@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement />
+  <nodes>
+    <node x="1729.6039351851855" y="1555.0">rentalAgency.RentalAgency</node>
+    <node x="2085.110648148149" y="1109.0">session.ReservationSession</node>
+    <node x="680.1788194444443" y="78.5">client.AbstractTesting</node>
+    <node x="534.8539351851855" y="1503.0">client.Client</node>
+    <node x="537.0" y="1122.5">client.AbstractTestManagement</node>
+    <node x="1783.5" y="713.0">session.ReservationSessionRemote</node>
+    <node x="628.75" y="674.0">client.AbstractTestAgency</node>
+    <node x="2853.552314814816" y="992.0">rental.CarRentalCompany</node>
+    <node x="3276.594212962964" y="423.0">rental.Reservation</node>
+    <node x="2598.260648148149" y="345.0">rental.CarType</node>
+    <node x="3550.552314814816" y="1201.0">rental.CarRentalServer.CrcData</node>
+    <node x="1271.5" y="726.5">session.ManagerSessionRemote</node>
+    <node x="1381.0" y="1122.5">session.ManagerSession</node>
+    <node x="3396.020486111111" y="1620.5">rental.CarRentalServer</node>
+    <node x="2560.625" y="0.0">rental.Quote</node>
+    <node x="2591.0" y="687.0">rental.CarRentalCompanyRemote</node>
+    <node x="552.5" y="450.0">client.AbstractTesting.ApplicationException</node>
+    <node x="3430.802314814816" y="699.5">rental.Car</node>
+    <node x="926.0" y="1161.5">rentalAgency.RentalAgencyRemote</node>
+    <node x="0.0" y="1096.0">rental.ReservationConstraints</node>
+    <node x="2327.0" y="778.5">rental.ReservationException</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="rental.CarRentalServer" target="rental.Car">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="client.Client" target="client.AbstractTestManagement">
+      <point x="0.0" y="-173.0" />
+      <point x="715.3539351851855" y="1483.0" />
+      <point x="721.5" y="1483.0" />
+      <point x="0.0" y="95.0" />
+    </edge>
+    <edge source="session.ReservationSession" target="rental.CarType">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="rental.CarRentalServer.CrcData" target="rental.Car">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="client.AbstractTestManagement" target="client.AbstractTesting.ApplicationException">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="client.AbstractTesting.ApplicationException" target="client.AbstractTesting">
+      <point x="0.0" y="-29.5" />
+      <point x="684.0" y="325.0" />
+      <point x="746.1788194444443" y="325.0" />
+      <point x="-66.0" y="69.0" />
+    </edge>
+    <edge source="client.AbstractTestManagement" target="client.AbstractTestAgency">
+      <point x="92.25" y="-95.0" />
+      <point x="813.75" y="972.0" />
+      <point x="824.75" y="972.0" />
+      <point x="0.0" y="134.0" />
+    </edge>
+    <edge source="rental.Reservation" target="rental.Quote">
+      <point x="0.0" y="-56.5" />
+      <point x="3400.594212962964" y="315.0" />
+      <point x="3041.0" y="315.0" />
+      <point x="205.875" y="147.5" />
+    </edge>
+    <edge source="rental.CarRentalCompany" target="rental.CarRentalCompanyRemote">
+      <point x="-169.25" y="-225.5" />
+      <point x="3022.802314814816" y="972.0" />
+      <point x="2968.25" y="972.0" />
+      <point x="125.75" y="121.0" />
+    </edge>
+    <edge source="rental.CarRentalServer.CrcData" target="rental.CarRentalServer">
+      <point x="20.75" y="16.5" />
+      <point x="3612.802314814816" y="1473.0" />
+      <point x="3543.720486111111" y="1473.0" />
+      <point x="42.19999999999982" y="-55.5" />
+    </edge>
+    <edge source="client.AbstractTestAgency" target="client.AbstractTesting">
+      <point x="98.0" y="-134.0" />
+      <point x="922.75" y="325.0" />
+      <point x="878.1788194444443" y="325.0" />
+      <point x="66.0" y="69.0" />
+    </edge>
+    <edge source="rental.CarRentalServer" target="rental.CarRentalCompany">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="session.ReservationSession" target="rental.Quote">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="rental.CarRentalCompany" target="rental.CarType">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="rental.Car" target="rental.CarType">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="rental.CarRentalCompany" target="rental.Reservation">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="client.AbstractTestAgency" target="client.AbstractTesting.ApplicationException">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="rental.CarRentalCompany" target="rental.Quote">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="rentalAgency.RentalAgency" target="rentalAgency.RentalAgencyRemote">
+      <point x="-129.58333333333348" y="-121.0" />
+      <point x="1755.520601851852" y="1483.0" />
+      <point x="1252.25" y="1483.0" />
+      <point x="108.75" y="56.0" />
+    </edge>
+    <edge source="rental.CarRentalCompany" target="rental.ReservationException">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="rental.CarRentalCompany" target="rental.Car">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="session.ReservationSession" target="session.ReservationSessionRemote">
+      <point x="-125.19999999999982" y="-108.5" />
+      <point x="2116.410648148149" y="972.0" />
+      <point x="2018.5" y="972.0" />
+      <point x="0.0" y="95.0" />
+    </edge>
+    <edge source="rentalAgency.RentalAgency" target="session.ReservationSession">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="rentalAgency.RentalAgency" target="rental.CarRentalCompanyRemote">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="client.Client" target="rentalAgency.RentalAgencyRemote">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="session.ReservationSession" target="rental.ReservationException">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="session.ManagerSession" target="session.ManagerSessionRemote">
+      <point x="0.0" y="-95.0" />
+      <point x="0.0" y="81.5" />
+    </edge>
+    <edge source="rental.Car" target="rental.Reservation">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="rental.CarRentalServer" target="rental.CarType">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="rental.CarRentalServer" target="rental.CarRentalServer.CrcData">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="client.Client" target="rental.ReservationConstraints">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="rentalAgency.RentalAgency" target="session.ManagerSession">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="0.7116229244777718" x="1069.9258618094236" y="1535.6316423302724" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Methods</Category>
+    <Category>Properties</Category>
+    <Category>Inner Classes</Category>
+    <Category>Constructors</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
