@@ -1,8 +1,10 @@
 \BOOKMARK [1][-]{section.1}{Overview}{}% 1
 \BOOKMARK [2][-]{subsection.1.1}{Serializable classes}{section.1}% 2
 \BOOKMARK [2][-]{subsection.1.2}{Remote classes}{section.1}% 3
-\BOOKMARK [2][-]{subsection.1.3}{Life cycle management}{section.1}% 4
-\BOOKMARK [2][-]{subsection.1.4}{Synchronization}{section.1}% 5
-\BOOKMARK [1][-]{section.2}{Full class diagram}{}% 6
-\BOOKMARK [1][-]{section.3}{Deployment diagram}{}% 7
-\BOOKMARK [1][-]{section.4}{Sequence diagram}{}% 8
+\BOOKMARK [2][-]{subsection.1.3}{Remote Object Locations}{section.1}% 4
+\BOOKMARK [2][-]{subsection.1.4}{Registering of remote objects}{section.1}% 5
+\BOOKMARK [2][-]{subsection.1.5}{Life cycle management}{section.1}% 6
+\BOOKMARK [2][-]{subsection.1.6}{Synchronization}{section.1}% 7
+\BOOKMARK [1][-]{section.2}{Full class diagram}{}% 8
+\BOOKMARK [1][-]{section.3}{Deployment diagram}{}% 9
+\BOOKMARK [1][-]{section.4}{Sequence diagram}{}% 10
