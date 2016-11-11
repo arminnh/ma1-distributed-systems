@@ -95,7 +95,7 @@
     \subsection{Synchronization}
 	We applied synchronization where multiple calls could possibly modify a resource
 	concurrently. Examples of this are most of \texttt{ReservationSession}'s methods. 
-	This will cause a bottleneck.
+	This will cause a bottleneck if the application has a lot of concurrent users, but for our testing purposes the difference is not noticeable.
 	
 	\section{Full class diagram}
     See 'class-diagram.jpg'.
