@@ -5,7 +5,7 @@
 \usepackage[a4paper]{geometry}
 \usepackage{hyperref}
 %opening
-\title{Distributed Systems: Java RMI session 2}
+\title{Distributed Systems: Java RMI session 2/3}
 \author{Jago Gyselinck, Armin Halilovic}
 
 \begin{document}
@@ -18,21 +18,36 @@
 
 
     \subsection{Serializable classes}
-    Which classes are serializable and why? \\
+    The following classes are serializable: 
     \begin{itemize}
-		\item Car, CarRentalCompanyRemote, CarType, Quote, Reservation, ReservationConstraints
-		\item RentalAgencyRemote, ManagerSessionRemote, ReservationSessionRemote
+    	% CarRentalCompany is enkel remote, niet serializable :) 
+		\item \texttt{Car, CarType, Quote, Reservation, ReservationConstraints}
+		\item We made these classes serializable as data of their type has to be
+		communicated between different distributed components. 
+		\item An example of this could be the \texttt{getAvailableCarTypes} method which returns \texttt{Set<CarType>} and is made available in the \texttt{CarRentalCompanyRemote} interface. 
+		The class \texttt{ReservationSession} makes use of this method, but resides on a different distributed component. For the method invocation on a remote reference of type \texttt{CarRentalCompanyRemote} to succeed, \texttt{CarType} must be serializable.
 	\end{itemize}
 
 
     \subsection{Remote classes}
-    Which classes are remotely accessible and why?  \\
-%    The following classes are remotely
+	The following classes are remotely accessible:
 	\begin{itemize}
-		\item CarRentalCompanyRemote, RentalAgencyRemote, ManagerSessionRemote, ReservationSessionRemote
+		\item \texttt{CarRentalCompanyRemote, RentalAgencyRemote,\\ ManagerSessionRemote, ReservationSessionRemote}
+		\item We made these objects remotely accessible because their
+		methods will be invoked from a non-local context, and remote references
+		of their type will be passed along between different distributed components.
 	\end{itemize}
+	\newpage
+	\subsection{Remote Object Locations}
     Which remote objects are located at the same host (or not) and why? \\
-%    Agency en de sessions, de rest (companies dus) op andere hosts
+	\begin{itemize}
+		\item Only the sessions (Manager and Reservation) and the Rental Agency
+		reside on the same host. This allows the client to request a remote reference
+		for the \texttt{CarRentalAgency} via the rmiregistry, and remote references to sessions can be requested via that remote reference. Those session remote references are kept in the remote \texttt{CarRentalAgency} object so they can be removed later. This organisation also has the advantage that when a method is invoked on a \texttt{(Manager/Reservation)Session} through a remote reference, the \texttt{CarRentalAgency} it has to interact with is a static object on the same component, so no remote interaction is required, and synchronization is easily achieved.
+		\item All other remote objects are located on different hosts. The car rental companies reside on their own server each   
+	\end{itemize}
+
+	\subsection{Registering of remote objects}
     Which remote objects are registered via the built-in RMI registry (or not) and why? \\
 %   allemaal toch?
 
