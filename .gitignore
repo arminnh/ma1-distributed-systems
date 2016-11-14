@@ -23,3 +23,11 @@ hs_err_pid*
 /1-JEE/CarRental/build/
 /1-JEE/CarRental-client/dist/
 /1-JEE/CarRental-ejb/dist/
+/java-EE-2-3/CarRental/nbproject/private/
+/java-EE-2-3/CarRental-client/nbproject/private/
+/java-EE-2-3/CarRental-lib/nbproject/private/
+/java-EE-2-3/CarRental-ejb/nbproject/private/
+/java-EE-2-3/CarRental-lib/build/
+/java-EE-2-3/CarRental-ejb/build/
+/java-EE-2-3/CarRental-lib/dist/
+/java-EE-2-3/CarRental/build/
