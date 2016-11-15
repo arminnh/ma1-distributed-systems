@@ -1,12 +1,13 @@
 package rental;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Entity
 public class Reservation extends Quote {
 
-    @Id
+    @Id @GeneratedValue
     private Long id;
 
     private int carId;

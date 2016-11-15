@@ -60,8 +60,7 @@ public class CarRentalSession implements CarRentalSessionRemote {
         try {
             CarRentalCompany c = em.createQuery("SELECT CRC FROM CarRentalCompany CRC WHERE CRC.name = :company", CarRentalCompany.class)
                                    .setParameter("company", company)
-                                   .getResultList()
-                                   .get(0);
+                                   .getSingleResult();
             
             Quote out = null;
             if (c != null) {
@@ -88,8 +87,7 @@ public class CarRentalSession implements CarRentalSessionRemote {
             for (Quote quote : quotes) {
                 c = em.createQuery("SELECT CRC FROM CarRentalCompany CRC WHERE CRC.name = :company", CarRentalCompany.class)
                       .setParameter("company", quote.getRentalCompany())
-                      .getResultList()
-                      .get(0);
+                      .getSingleResult();
                 
                 if (c != null) {
                     done.add(c.confirmQuote(quote));
@@ -101,8 +99,7 @@ public class CarRentalSession implements CarRentalSessionRemote {
             for(Reservation r:done) {
                 c = em.createQuery("SELECT CRC FROM CarRentalCompany CRC WHERE CRC.name = :company", CarRentalCompany.class)
                       .setParameter("company", r.getRentalCompany())
-                      .getResultList()
-                      .get(0);
+                      .getSingleResult();
                 
                 if (c!= null) {
                     c.cancelReservation(r);

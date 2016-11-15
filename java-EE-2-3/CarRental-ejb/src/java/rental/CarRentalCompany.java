@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import static javax.persistence.CascadeType.PERSIST;
 import static javax.persistence.CascadeType.REMOVE;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
@@ -19,7 +20,7 @@ import javax.persistence.OneToMany;
 @Entity
 public class CarRentalCompany {
 
-    @Id
+    @Id @GeneratedValue
     private long id;
     
     private static Logger logger = Logger.getLogger(CarRentalCompany.class.getName());
@@ -30,6 +31,7 @@ public class CarRentalCompany {
     
     @ManyToMany(cascade=PERSIST)
     private Set<CarType> carTypes = new HashSet<CarType>();
+    
     private List<String> regions = new ArrayList<String>();
 
     public CarRentalCompany() {
@@ -38,6 +40,11 @@ public class CarRentalCompany {
     /***************
      * CONSTRUCTOR *
      ***************/
+    
+    public CarRentalCompany(String name) {
+        logger.log(Level.INFO, "<{0}> Car Rental Company {0} starting up...", name);
+        setName(name);
+    }
     
     public CarRentalCompany(String name, List<Car> cars) {
         logger.log(Level.INFO, "<{0}> Car Rental Company {0} starting up...", name);
@@ -91,9 +98,17 @@ public class CarRentalCompany {
         return availableCarTypes;
     }
 
+    public void addCarType(CarType ct) {
+        this.carTypes.add(ct);
+    }
+
     /*********
      * CARS *
      *********/
+
+    public void addCar(Car car) {
+        this.cars.add(car);
+    }
     
     public Car getCar(int uid) {
         for (Car car : cars) {
@@ -132,6 +147,22 @@ public class CarRentalCompany {
             }
         }
         return availableCars;
+    }
+
+    /****************
+     *   REGIONS    *
+     ****************/
+    
+    public List<String> getRegions() {
+        return this.regions;
+    }
+    
+    public void setRegions(List<String> regions) {
+        this.regions = regions;
+    }
+    
+    public void addRegions(List<String> regions) {
+        this.regions.addAll(regions);
     }
 
     /****************

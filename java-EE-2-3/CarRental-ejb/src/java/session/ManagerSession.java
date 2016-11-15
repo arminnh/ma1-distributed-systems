@@ -9,6 +9,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import rental.Car;
+import rental.CarRentalCompany;
 import rental.CarType;
 import rental.Reservation;
 
@@ -81,6 +82,46 @@ public class ManagerSession implements ManagerSessionRemote {
             return 0;
         }
         return out.size();
+    }
+
+    @Override
+    public void addCarRentalCompany(String name) {
+        em.getTransaction().begin(); // TODO CHECK: do we need to do this here? 
+        em.persist(new CarRentalCompany(name));
+        em.getTransaction().commit();
+    }
+
+    @Override
+    public void addRegions(String company, List<String> regions) {
+        // TODO: refactor queries
+        CarRentalCompany crc = em.createQuery("SELECT CRC FROM CarRentalCompany CRC WHERE CRC.name = :company", CarRentalCompany.class).getSingleResult();
+        crc.addRegions(regions);
+        
+        em.getTransaction().begin();
+        em.persist(crc);
+        em.getTransaction().commit();
+    }
+
+    @Override
+    public void addCarType(String company, String type) {
+        CarRentalCompany crc = em.createQuery("SELECT CRC FROM CarRentalCompany CRC WHERE CRC.name = :company", CarRentalCompany.class).getSingleResult();
+        CarType ct = em.createQuery("SELECT CT FROM CarType CT WHERE CT.name = :type", CarType.class).setParameter("type", type).getSingleResult();
+        crc.addCarType(ct);
+        
+        em.getTransaction().begin();
+        em.persist(crc);
+        em.getTransaction().commit();
+    }
+
+    @Override
+    public void addCar(String company, String type) {
+        CarRentalCompany crc = em.createQuery("SELECT CRC FROM CarRentalCompany CRC WHERE CRC.name = :company", CarRentalCompany.class).getSingleResult();
+        Car car = em.createQuery("SELECT C FROM Car C WHERE C.type = :type", Car.class).setParameter("type", type).getSingleResult();
+        crc.addCar(car);
+        
+        em.getTransaction().begin();
+        em.persist(crc);
+        em.getTransaction().commit();
     }
 
 }
