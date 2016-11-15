@@ -9,7 +9,6 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import rental.Car;
-import rental.CarRentalCompany;
 import rental.CarType;
 import rental.Reservation;
 
@@ -22,7 +21,9 @@ public class ManagerSession implements ManagerSessionRemote {
     @Override
     public Set<CarType> getCarTypes(String company) {
         try {
-            List<CarType> results = em.createQuery("SELECT carTypes FROM CarRentalCompany WHERE name = :name").setParameter("name", company).getResultList();
+            List<CarType> results = em.createQuery("SELECT CT FROM CarRentalCompany CRC JOIN CarType CT WHERE CRC.name = :name", CarType.class)
+                                      .setParameter("name", company)
+                                      .getResultList();
             return new HashSet<CarType>(results);
         } catch (IllegalArgumentException ex) {
             Logger.getLogger(ManagerSession.class.getName()).log(Level.SEVERE, null, ex);
@@ -34,14 +35,10 @@ public class ManagerSession implements ManagerSessionRemote {
     public Set<Integer> getCarIds(String company, String type) {
         Set<Integer> out = new HashSet<Integer>();
         try {
-            List<Car> cars = em.createQuery("SELECT CRC.cars "
-                                             + "FROM CarRentalCompany as CRC"
-                                             + "JOIN Car "
-                                             + "JOIN CarType "
-                                             + "WHERE CRC.name = :company AND CarType.name = :type")
-                                  .setParameter("name", company)
-                                  .setParameter("type", type)
-                                  .getResultList();
+            List<Car> cars = em.createQuery("SELECT C FROM CarRentalCompany as CRC JOIN Car C JOIN CarType CT WHERE CRC.name = :company AND CT.name = :type")
+                               .setParameter("company", company)
+                               .setParameter("type", type)
+                               .getResultList();
             
             for(Car c: cars){
                 out.add(c.getId());
@@ -56,14 +53,11 @@ public class ManagerSession implements ManagerSessionRemote {
     @Override
     public int getNumberOfReservations(String company, String type, int id) {
         try {
-            return em.createQuery("SELECT COUNT(Reservation.id) "
-                                             + "FROM CarRentalCompany as CRC"
-                                             + "JOIN Car "
-                                             + "JOIN Reservation "
-                                             + "WHERE CRC.name = :company AND Car.id = :id")
-                                  .setParameter("name", company)
-                                  .setParameter("id", id)
-                                  .getFirstResult();
+            return em.createQuery("SELECT COUNT(R.id) FROM CarRentalCompany CRC JOIN Car C JOIN Reservation R WHERE CRC.name = :company AND C.id = :id", Integer.class)
+                     .setParameter("company", company)
+                     .setParameter("id", id)
+                     .getFirstResult();
+            
         } catch (IllegalArgumentException ex) {
             Logger.getLogger(ManagerSession.class.getName()).log(Level.SEVERE, null, ex);
             return 0;
@@ -74,14 +68,10 @@ public class ManagerSession implements ManagerSessionRemote {
     public int getNumberOfReservations(String company, String type) {
         Set<Reservation> out = new HashSet<Reservation>();
         try {
-            List<Car> cars = em.createQuery("SELECT CRC.cars "
-                                             + "FROM CarRentalCompany as CRC"
-                                             + "JOIN Car "
-                                             + "JOIN CarType "
-                                             + "WHERE CRC.name = :company AND CarType.name = :type")
-                                  .setParameter("name", company)
-                                  .setParameter("type", type)
-                                  .getResultList();
+            List<Car> cars = em.createQuery("SELECT C FROM CarRentalCompany as CRC JOIN Car C JOIN CarType CT WHERE CRC.name = :company AND CT.name = :type")
+                               .setParameter("company", company)
+                               .setParameter("type", type)
+                               .getResultList();
             
             for(Car c: cars){
                 out.addAll(c.getReservations());
