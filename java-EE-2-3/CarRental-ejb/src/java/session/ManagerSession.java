@@ -85,7 +85,7 @@ public class ManagerSession implements ManagerSessionRemote {
     }
 
     @Override
-    public void addCarRentalCompany(String name) {
+    public void createCarRentalCompany(String name) {
         em.getTransaction().begin(); // TODO CHECK: do we need to do this here? 
         em.persist(new CarRentalCompany(name));
         em.getTransaction().commit();
@@ -114,9 +114,9 @@ public class ManagerSession implements ManagerSessionRemote {
     }
 
     @Override
-    public void addCar(String company, String type) {
+    public void addCar(String company, Integer id) {
         CarRentalCompany crc = em.createQuery("SELECT CRC FROM CarRentalCompany CRC WHERE CRC.name = :company", CarRentalCompany.class).getSingleResult();
-        Car car = em.createQuery("SELECT C FROM Car C WHERE C.type = :type", Car.class).setParameter("type", type).getSingleResult();
+        Car car = em.createQuery("SELECT C FROM Car C WHERE C.id = :id", Car.class).setParameter("id", id).getSingleResult();
         crc.addCar(car);
         
         em.getTransaction().begin();
