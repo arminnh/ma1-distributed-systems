@@ -1,5 +1,6 @@
 package rental;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -8,13 +9,31 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static javax.persistence.CascadeType.PERSIST;
+import static javax.persistence.CascadeType.REMOVE;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 
+@Entity
 public class CarRentalCompany {
 
+    @Id
+    private long id;
+    
     private static Logger logger = Logger.getLogger(CarRentalCompany.class.getName());
     private String name;
+    
+    @OneToMany(cascade=REMOVE)
     private List<Car> cars;
+    
+    @ManyToMany(cascade=PERSIST)
     private Set<CarType> carTypes = new HashSet<CarType>();
+    private List<String> regions = new ArrayList<String>();
+
+    public CarRentalCompany() {
+    }
 
     /***************
      * CONSTRUCTOR *

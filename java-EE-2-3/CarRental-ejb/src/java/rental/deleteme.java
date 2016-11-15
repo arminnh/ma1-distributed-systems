@@ -12,7 +12,7 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class RentalStore {
+public class RentalsldkjflskdStore {
 
     private static Map<String, CarRentalCompany> rentals;
 
@@ -25,6 +25,7 @@ public class RentalStore {
     }
     
     public static synchronized Map<String, CarRentalCompany> getRentals(){
+        
         if(rentals == null){
             rentals = new HashMap<String, CarRentalCompany>();
             loadRental("hertz.csv");

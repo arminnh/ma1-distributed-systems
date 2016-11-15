@@ -2,10 +2,14 @@ package rental;
 
 import java.io.Serializable;
 import java.util.Date;
+import javax.persistence.Temporal;
+import static javax.persistence.TemporalType.DATE;
 
 public class Quote implements Serializable {
-
+    
+    @Temporal(DATE)
     private Date startDate;
+    @Temporal(DATE)
     private Date endDate;
     private String carRenter;
     private String rentalCompany;
@@ -24,6 +28,9 @@ public class Quote implements Serializable {
         this.carType = carType;
         this.rentalPrice = rentalPrice;
     }
+    
+    /* TODO: will this cause problems ? */
+    public Quote() {}
 
     public Date getStartDate() {
         return startDate;
