@@ -12,7 +12,7 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class RentalsldkjflskdStore {
+public class RentalStore {
 
     private static Map<String, CarRentalCompany> rentals;
 
@@ -37,8 +37,8 @@ public class RentalsldkjflskdStore {
     public static void loadRental(String datafile) {
         try {
             CrcData data = loadData(datafile);
-            CarRentalCompany company = new CarRentalCompany(data.name, data.regions, data.cars);
-            rentals.put(data.name, company);
+            //CarRentalCompany company = new CarRentalCompany(data.name, data.regions, data.cars);
+            //rentals.put(data.name, company);
             Logger.getLogger(RentalStore.class.getName()).log(Level.INFO, "Loaded {0} from file {1}", new Object[]{data.name, datafile});
         } catch (NumberFormatException ex) {
             Logger.getLogger(RentalStore.class.getName()).log(Level.SEVERE, "bad file", ex);
