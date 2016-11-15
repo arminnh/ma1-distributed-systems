@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.naming.InitialContext;
 import rental.CarType;
 import rental.Reservation;
 import session.CarRentalSessionRemote;
@@ -26,6 +27,9 @@ public class Main extends AbstractTestManagement<CarRentalSessionRemote, Manager
         Main main = new Main("trips");
 
         ManagerSessionRemote ms = main.getNewManagerSession("main", "carRentalName? u wot m8???? it says 'uses the management interface to load the car rental companies'");
+        System.out.println("TEST");
+        System.out.println(ms == null);
+
         main.loadRental("docx.csv", ms);
         main.loadRental("hertz.csv", ms);
 
@@ -49,12 +53,12 @@ public class Main extends AbstractTestManagement<CarRentalSessionRemote, Manager
 
     @Override
     protected CarRentalSessionRemote getNewReservationSession(String name) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return (CarRentalSessionRemote) (new InitialContext()).lookup(CarRentalSessionRemote.class.getName());
     }
 
     @Override
     protected ManagerSessionRemote getNewManagerSession(String name, String carRentalName) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return (ManagerSessionRemote) (new InitialContext()).lookup(ManagerSessionRemote.class.getName());
     }
 
     @Override
@@ -77,7 +81,7 @@ public class Main extends AbstractTestManagement<CarRentalSessionRemote, Manager
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public static void loadRental(String datafile, ManagerSessionRemote ms) {
+    public void loadRental(String datafile, ManagerSessionRemote ms) {
         try {
             CrcData data = loadData(datafile, ms);
             ms.createCarRentalCompany(data.name);
@@ -94,7 +98,7 @@ public class Main extends AbstractTestManagement<CarRentalSessionRemote, Manager
 
     }
 
-    public static CrcData loadData(String datafile, ManagerSessionRemote ms) throws NumberFormatException, IOException {
+    public CrcData loadData(String datafile, ManagerSessionRemote ms) throws NumberFormatException, IOException {
         CrcData out = new CrcData();
         StringTokenizer csvReader;
         int nextuid = 0;

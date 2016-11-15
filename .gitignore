@@ -31,3 +31,7 @@ hs_err_pid*
 /java-EE-2-3/CarRental-ejb/build/
 /java-EE-2-3/CarRental-lib/dist/
 /java-EE-2-3/CarRental/build/
+/java-EE-2-3/CarRental-ejb/dist/
+/java-EE-2-3/CarRental-client/build/
+/java-EE-2-3/CarRental-client/dist/
+/java-EE-2-3/CarRental/dist/
