@@ -1,12 +1,8 @@
 package client;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
@@ -31,9 +27,6 @@ public class Main extends AbstractTestManagement<CarRentalSessionRemote, Manager
         Main main = new Main("trips");
 
         ManagerSessionRemote ms = main.getNewManagerSession("main", "carRentalName? u wot m8???? it says 'uses the management interface to load the car rental companies'");
-        System.out.println("TEST");
-        System.out.println(ms == null);
-
         main.loadRental("dockx.csv", ms);
         main.loadRental("hertz.csv", ms);
 

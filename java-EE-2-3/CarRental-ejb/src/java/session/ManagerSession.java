@@ -86,19 +86,22 @@ public class ManagerSession implements ManagerSessionRemote {
 
     @Override
     public void createCarRentalCompany(String name) {
-        em.getTransaction().begin(); // TODO CHECK: do we need to do this here? 
+        /*
+            em.getTransaction().begin(); // TODO CHECK: do we need to do this here? 
+            http://stackoverflow.com/questions/10915855/cannot-use-an-entitytransaction-while-using-jta
+            In your case the transaction is managed by the container, in the first use of the EntitiyManager in your method, 
+            the container checks whether there is an active transaction or not, if there is no transaction active then it creates one, 
+            and when the method call ends, the transaction is committed by the container. The container takes care of the transaction, that is JTA.
+        */
+        
         em.persist(new CarRentalCompany(name));
-        em.getTransaction().commit();
     }
 
     @Override
     public Long createCarType(String name, int nrOfSeats, float trunkSpace, double rentalPricePerDay, boolean smokingAllowed) {
         CarType type = new CarType(name, nrOfSeats, trunkSpace, rentalPricePerDay, smokingAllowed);
         
-        em.getTransaction().begin();
         em.persist(type);
-        em.getTransaction().commit();
-        
         return type.getId();
     }
     
@@ -107,44 +110,35 @@ public class ManagerSession implements ManagerSessionRemote {
         CarType ct = em.createQuery("SELECT CT FROM CarType CT WHERE CT.id = :id", CarType.class).setParameter("id", typeID).getSingleResult();
         Car car = new Car(ct);
         
-        em.getTransaction().begin();
         em.persist(car);
-        em.getTransaction().commit();
-        
         return (long) car.getId();
     }
 
     @Override
     public void addRegions(String company, List<String> regions) {
         // TODO: refactor queries
-        CarRentalCompany crc = em.createQuery("SELECT CRC FROM CarRentalCompany CRC WHERE CRC.name = :company", CarRentalCompany.class).getSingleResult();
+        CarRentalCompany crc = em.createQuery("SELECT CRC FROM CarRentalCompany CRC WHERE CRC.name = :company", CarRentalCompany.class).setParameter("company", company).getSingleResult();
         crc.addRegions(regions);
         
-        em.getTransaction().begin();
         em.persist(crc);
-        em.getTransaction().commit();
     }
 
     @Override
     public void addCarType(String company, Long id) {
-        CarRentalCompany crc = em.createQuery("SELECT CRC FROM CarRentalCompany CRC WHERE CRC.name = :company", CarRentalCompany.class).getSingleResult();
+        CarRentalCompany crc = em.createQuery("SELECT CRC FROM CarRentalCompany CRC WHERE CRC.name = :company", CarRentalCompany.class).setParameter("company", company).getSingleResult();
         CarType ct = em.createQuery("SELECT CT FROM CarType CT WHERE CT.id = :id", CarType.class).setParameter("id", id).getSingleResult();
         crc.addCarType(ct);
         
-        em.getTransaction().begin();
         em.persist(crc);
-        em.getTransaction().commit();
     }
 
     @Override
     public void addCar(String company, Long id) {
-        CarRentalCompany crc = em.createQuery("SELECT CRC FROM CarRentalCompany CRC WHERE CRC.name = :company", CarRentalCompany.class).getSingleResult();
+        CarRentalCompany crc = em.createQuery("SELECT CRC FROM CarRentalCompany CRC WHERE CRC.name = :company", CarRentalCompany.class).setParameter("company", company).getSingleResult();
         Car car = em.createQuery("SELECT C FROM Car C WHERE C.id = :id", Car.class).setParameter("id", id).getSingleResult();
         crc.addCar(car);
         
-        em.getTransaction().begin();
         em.persist(crc);
-        em.getTransaction().commit();
     }
 
 }
