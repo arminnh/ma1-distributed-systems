@@ -34,7 +34,7 @@ public class Main extends AbstractTestManagement<CarRentalSessionRemote, Manager
         System.out.println("TEST");
         System.out.println(ms == null);
 
-        main.loadRental("docx.csv", ms);
+        main.loadRental("dockx.csv", ms);
         main.loadRental("hertz.csv", ms);
 
         main.run();
@@ -112,24 +112,8 @@ public class Main extends AbstractTestManagement<CarRentalSessionRemote, Manager
     public CrcData loadData(String datafile, ManagerSessionRemote ms) throws NumberFormatException, IOException {
         CrcData out = new CrcData();
         StringTokenizer csvReader;
-       
-        // open file from jar
-        BufferedReader in = new BufferedReader(new FileReader(datafile));
-        System.out.println(in);
-        /*in = new BufferedReader(new FileReader("java/" + datafile));
-        System.out.println(in);
-        in = new BufferedReader(new FileReader("src/java/" + datafile));
-        System.out.println(in);
-        in = new BufferedReader(new FileReader("CarRental-client/src/java/" + datafile));
-        System.out.println(in);
-        in = new BufferedReader(new FileReader("client/" + datafile));
-        System.out.println(in);
-        in = new BufferedReader(new FileReader("java/client/" + datafile));
-        System.out.println(in);
-        in = new BufferedReader(new FileReader("src/java/client/" + datafile));
-        System.out.println(in);
-        in = new BufferedReader(new FileReader("CarRental-client/src/java/client/" + datafile));
-        System.out.println(in);*/
+        
+        BufferedReader in = new BufferedReader(new InputStreamReader(Main.class.getClassLoader().getResourceAsStream(datafile)));
         
         try {
             while (in.ready()) {
