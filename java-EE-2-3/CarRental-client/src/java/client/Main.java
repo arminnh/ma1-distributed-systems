@@ -1,8 +1,12 @@
 package client;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
@@ -84,11 +88,18 @@ public class Main extends AbstractTestManagement<CarRentalSessionRemote, Manager
     public void loadRental(String datafile, ManagerSessionRemote ms) {
         try {
             CrcData data = loadData(datafile, ms);
+            
             ms.createCarRentalCompany(data.name);
             ms.addRegions(data.name, data.regions);
-            for (Integer i : data.carIDs ) {
+            
+            for (Long i : data.carTypeIDs ) {
+                ms.addCarType(data.name, i);
+            }
+            
+            for (Long i : data.carIDs ) {
                 ms.addCar(data.name, i);
             }
+            
             Logger.getLogger(Main.class.getName()).log(Level.INFO, "Loaded {0} from file {1}", new Object[]{data.name, datafile});
         } catch (NumberFormatException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "bad file", ex);
@@ -101,10 +112,24 @@ public class Main extends AbstractTestManagement<CarRentalSessionRemote, Manager
     public CrcData loadData(String datafile, ManagerSessionRemote ms) throws NumberFormatException, IOException {
         CrcData out = new CrcData();
         StringTokenizer csvReader;
-        int nextuid = 0;
        
-        //open file from jar
-        BufferedReader in = new BufferedReader(new InputStreamReader(Main.class.getClassLoader().getResourceAsStream(datafile)));
+        // open file from jar
+        BufferedReader in = new BufferedReader(new FileReader(datafile));
+        System.out.println(in);
+        /*in = new BufferedReader(new FileReader("java/" + datafile));
+        System.out.println(in);
+        in = new BufferedReader(new FileReader("src/java/" + datafile));
+        System.out.println(in);
+        in = new BufferedReader(new FileReader("CarRental-client/src/java/" + datafile));
+        System.out.println(in);
+        in = new BufferedReader(new FileReader("client/" + datafile));
+        System.out.println(in);
+        in = new BufferedReader(new FileReader("java/client/" + datafile));
+        System.out.println(in);
+        in = new BufferedReader(new FileReader("src/java/client/" + datafile));
+        System.out.println(in);
+        in = new BufferedReader(new FileReader("CarRental-client/src/java/client/" + datafile));
+        System.out.println(in);*/
         
         try {
             while (in.ready()) {
@@ -118,16 +143,19 @@ public class Main extends AbstractTestManagement<CarRentalSessionRemote, Manager
                     out.regions = Arrays.asList(csvReader.nextToken().split(":"));
                 } else {
                     csvReader = new StringTokenizer(line, ",");
-                    //create new car type from first 5 fields TODO, managersession.addCarType
-                    CarType type = new CarType(csvReader.nextToken(),
-                            Integer.parseInt(csvReader.nextToken()),
-                            Float.parseFloat(csvReader.nextToken()),
-                            Double.parseDouble(csvReader.nextToken()),
-                            Boolean.parseBoolean(csvReader.nextToken()));
+                    
+                    //create new car type from first 5 fields
+                    Long typeID = ms.createCarType(csvReader.nextToken(),
+                                                   Integer.parseInt(csvReader.nextToken()),
+                                                   Float.parseFloat(csvReader.nextToken()),
+                                                   Double.parseDouble(csvReader.nextToken()),
+                                                   Boolean.parseBoolean(csvReader.nextToken()));
+                    out.carTypeIDs.add(typeID);
+                    
                     //create N new cars with given type, where N is the 5th field
                     for (int i = Integer.parseInt(csvReader.nextToken()); i > 0; i--) {
-                        // TODO managerSession.createCar( ... ) which returns the ID of the car => add the id to CrcData
-                        //out.cars.add(new Car(nextuid++, type));
+                        Long carID = ms.createCar(typeID);
+                        out.carIDs.add(carID);
                     }        
                 }
             } 
@@ -139,8 +167,9 @@ public class Main extends AbstractTestManagement<CarRentalSessionRemote, Manager
     }
     
     static class CrcData {
-            public List<Integer> carIDs = new LinkedList<Integer>();
-            public String name;
-            public List<String> regions =  new LinkedList<String>();
+        public String name;
+        public List<Long> carTypeIDs = new LinkedList<Long>();
+        public List<Long> carIDs = new LinkedList<Long>();
+        public List<String> regions =  new LinkedList<String>();
     }
 }

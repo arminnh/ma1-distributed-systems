@@ -92,6 +92,29 @@ public class ManagerSession implements ManagerSessionRemote {
     }
 
     @Override
+    public Long createCarType(String name, int nrOfSeats, float trunkSpace, double rentalPricePerDay, boolean smokingAllowed) {
+        CarType type = new CarType(name, nrOfSeats, trunkSpace, rentalPricePerDay, smokingAllowed);
+        
+        em.getTransaction().begin();
+        em.persist(type);
+        em.getTransaction().commit();
+        
+        return type.getId();
+    }
+    
+    @Override
+    public Long createCar(Long typeID) {
+        CarType ct = em.createQuery("SELECT CT FROM CarType CT WHERE CT.id = :id", CarType.class).setParameter("id", typeID).getSingleResult();
+        Car car = new Car(ct);
+        
+        em.getTransaction().begin();
+        em.persist(car);
+        em.getTransaction().commit();
+        
+        return (long) car.getId();
+    }
+
+    @Override
     public void addRegions(String company, List<String> regions) {
         // TODO: refactor queries
         CarRentalCompany crc = em.createQuery("SELECT CRC FROM CarRentalCompany CRC WHERE CRC.name = :company", CarRentalCompany.class).getSingleResult();
@@ -103,9 +126,9 @@ public class ManagerSession implements ManagerSessionRemote {
     }
 
     @Override
-    public void addCarType(String company, String type) {
+    public void addCarType(String company, Long id) {
         CarRentalCompany crc = em.createQuery("SELECT CRC FROM CarRentalCompany CRC WHERE CRC.name = :company", CarRentalCompany.class).getSingleResult();
-        CarType ct = em.createQuery("SELECT CT FROM CarType CT WHERE CT.name = :type", CarType.class).setParameter("type", type).getSingleResult();
+        CarType ct = em.createQuery("SELECT CT FROM CarType CT WHERE CT.id = :id", CarType.class).setParameter("id", id).getSingleResult();
         crc.addCarType(ct);
         
         em.getTransaction().begin();
@@ -114,7 +137,7 @@ public class ManagerSession implements ManagerSessionRemote {
     }
 
     @Override
-    public void addCar(String company, Integer id) {
+    public void addCar(String company, Long id) {
         CarRentalCompany crc = em.createQuery("SELECT CRC FROM CarRentalCompany CRC WHERE CRC.name = :company", CarRentalCompany.class).getSingleResult();
         Car car = em.createQuery("SELECT C FROM Car C WHERE C.id = :id", Car.class).setParameter("id", id).getSingleResult();
         crc.addCar(car);

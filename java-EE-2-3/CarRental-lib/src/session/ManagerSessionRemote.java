@@ -20,7 +20,11 @@ public interface ManagerSessionRemote {
     
     public void addRegions(String company, List<String> regions);
     
-    public void addCarType(String company, String type);
+    public void addCarType(String company, Long id);
     
-    public void addCar(String company, Integer id);
+    public void addCar(String company, Long id);
+
+    public Long createCarType(String name, int nrOfSeats, float trunkSpace, double rentalPricePerDay, boolean smokingAllowed);
+
+    public Long createCar(Long typeID);
 }
