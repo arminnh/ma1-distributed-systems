@@ -7,7 +7,6 @@ import javax.ejb.Remote;
 import rental.CarType;
 import rental.Quote;
 import rental.Reservation;
-import rental.ReservationConstraints;
 import rental.ReservationException;
 
 @Remote
@@ -19,10 +18,16 @@ public interface CarRentalSessionRemote {
     
     public List<CarType> getAvailableCarTypes(Date start, Date end);
     
-    public Quote createQuote(String company, ReservationConstraints constraints) throws ReservationException;
-    
     public List<Quote> getCurrentQuotes();
     
     public List<Reservation> confirmQuotes() throws ReservationException;
+
+    public Set<CarType> checkForAvailableCarTypes(Date start, Date end);
+
+    public String getCheapestCarType(String region, Date start, Date end);
+
+    public void addQuote(String carRenter, String carType, String region, Date start, Date end);
+
+    public List<Reservation> confirmQuotes(String carRenter) throws ReservationException;
     
 }

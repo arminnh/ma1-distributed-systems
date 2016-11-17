@@ -34,48 +34,53 @@ public class Main extends AbstractTestManagement<CarRentalSessionRemote, Manager
     }
 
     @Override
-    protected Set<String> getBestClients(ManagerSessionRemote ms) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    protected String getCheapestCarType(CarRentalSessionRemote session, Date start, Date end, String region) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    protected CarType getMostPopularCarTypeIn(ManagerSessionRemote ms, String carRentalCompanyName, int year) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     protected CarRentalSessionRemote getNewReservationSession(String name) throws Exception {
         return (CarRentalSessionRemote) (new InitialContext()).lookup(CarRentalSessionRemote.class.getName());
     }
 
     @Override
     protected ManagerSessionRemote getNewManagerSession(String name, String carRentalName) throws Exception {
+        // TODO: ask assistant what's up with the carRentalName here
         return (ManagerSessionRemote) (new InitialContext()).lookup(ManagerSessionRemote.class.getName());
     }
 
     @Override
     protected void checkForAvailableCarTypes(CarRentalSessionRemote session, Date start, Date end) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // void function, just need to print stuff? or return exception when something is wrong?
+        System.out.println("Available car types:");
+        for (CarType c : session.checkForAvailableCarTypes(start, end)) {
+            System.out.println("\t\t" + c.toString());
+        }
     }
 
     @Override
-    protected void addQuoteToSession(CarRentalSessionRemote session, String name, Date start, Date end, String carType, String region) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    protected void addQuoteToSession(CarRentalSessionRemote session, String carRenter, Date start, Date end, String carType, String region) throws Exception {
+        session.addQuote(carRenter, carType, region, start, end);
     }
 
     @Override
-    protected List<Reservation> confirmQuotes(CarRentalSessionRemote session, String name) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    protected List<Reservation> confirmQuotes(CarRentalSessionRemote session, String carRenter) throws Exception {
+        return session.confirmQuotes(carRenter);
+    }
+
+    @Override
+    protected String getCheapestCarType(CarRentalSessionRemote session, Date start, Date end, String region) throws Exception {
+        return session.getCheapestCarType(region, start, end);
+    }
+
+    @Override
+    protected Set<String> getBestClients(ManagerSessionRemote ms) throws Exception {
+        return ms.getBestClients();
+    }
+
+    @Override
+    protected CarType getMostPopularCarTypeIn(ManagerSessionRemote ms, String carRentalCompanyName, int year) throws Exception {
+        return ms.getMostPopularCarTypeIn(carRentalCompanyName, year);
     }
 
     @Override
     protected int getNumberOfReservationsForCarType(ManagerSessionRemote ms, String carRentalName, String carType) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return ms.getNumberOfReservationsForCarType(carRentalName, carType);
     }
 
     public void loadRental(String datafile, ManagerSessionRemote ms) {
@@ -85,8 +90,8 @@ public class Main extends AbstractTestManagement<CarRentalSessionRemote, Manager
             ms.createCarRentalCompany(data.name);
             ms.addRegions(data.name, data.regions);
             
-            for (Long i : data.carTypeIDs ) {
-                ms.addCarType(data.name, i);
+            for (String id : data.carTypeIDs ) {
+                ms.addCarType(data.name, id);
             }
             
             for (Long i : data.carIDs ) {
@@ -122,11 +127,11 @@ public class Main extends AbstractTestManagement<CarRentalSessionRemote, Manager
                     csvReader = new StringTokenizer(line, ",");
                     
                     //create new car type from first 5 fields
-                    Long typeID = ms.createCarType(csvReader.nextToken(),
-                                                   Integer.parseInt(csvReader.nextToken()),
-                                                   Float.parseFloat(csvReader.nextToken()),
-                                                   Double.parseDouble(csvReader.nextToken()),
-                                                   Boolean.parseBoolean(csvReader.nextToken()));
+                    String typeID = ms.createCarType(csvReader.nextToken(),
+                                                     Integer.parseInt(csvReader.nextToken()),
+                                                     Float.parseFloat(csvReader.nextToken()),
+                                                     Double.parseDouble(csvReader.nextToken()),
+                                                     Boolean.parseBoolean(csvReader.nextToken()));
                     out.carTypeIDs.add(typeID);
                     
                     //create N new cars with given type, where N is the 5th field
@@ -145,7 +150,7 @@ public class Main extends AbstractTestManagement<CarRentalSessionRemote, Manager
     
     static class CrcData {
         public String name;
-        public List<Long> carTypeIDs = new LinkedList<Long>();
+        public List<String> carTypeIDs = new LinkedList<String>();
         public List<Long> carIDs = new LinkedList<Long>();
         public List<String> regions =  new LinkedList<String>();
     }

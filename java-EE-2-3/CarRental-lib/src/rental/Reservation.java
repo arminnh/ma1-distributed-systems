@@ -2,16 +2,17 @@ package rental;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import static javax.persistence.GenerationType.AUTO;
 import javax.persistence.Id;
 
 @Entity
 public class Reservation extends Quote {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy=AUTO)
     private Long id;
-
+    
     private int carId;
-        
+    
     /***************
      * CONSTRUCTOR *
      ***************/
@@ -23,11 +24,20 @@ public class Reservation extends Quote {
     }
     
     public Reservation() {}
+
+    /*********************
+     * GETTERS & SETTERS *
+     ********************/
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
     
-    /******
-     * ID *
-     ******/
-    
+    // TODO, what to do with this?
     public int getCarId() {
     	return carId;
     }
@@ -40,13 +50,5 @@ public class Reservation extends Quote {
     public String toString() {
         return String.format("Reservation for %s from %s to %s at %s\nCar type: %s\tCar: %s\nTotal price: %.2f", 
                 getCarRenter(), getStartDate(), getEndDate(), getRentalCompany(), getCarType(), getCarId(), getRentalPrice());
-    }	
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 }

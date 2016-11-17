@@ -6,9 +6,13 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.Stateful;
 import javax.persistence.EntityManager;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import rental.CarRentalCompany;
 import rental.CarType;
@@ -19,15 +23,22 @@ import rental.ReservationException;
 
 @Stateful
 public class CarRentalSession implements CarRentalSessionRemote {
+    
+    // TODO move this to a JPQL queries/helper class
+    public static Object getSingleResultOrNull(Query query){
+        List results = query.getResultList();
+        if (results.isEmpty()) return null;
+        else if (results.size() == 1) return results.get(0);
+        throw new NonUniqueResultException();
+    }
+    
+    // TODO move this to a JPQL queries/helper class
+    public static Object getFirstResultOrNull(Query query){
+        List results = query.getResultList();
+        if (results.isEmpty()) return null;
+        return results.get(0);
+    }
 
-    /*
-    
-    TODO: create classes/functions for all queries
-    
-    */
-    
-    
-    
     @PersistenceContext
     EntityManager em;
     
@@ -42,7 +53,7 @@ public class CarRentalSession implements CarRentalSessionRemote {
     @Override
     public List<CarType> getAvailableCarTypes(Date start, Date end) {
         // TODO: filter out possibilities here so getAvailableCarTypes(start, end) is not necessary
-        TypedQuery q = em.createQuery("SELECT CRC FROM CarRentalCompany CRC JOIN CarType CT", CarRentalCompany.class);
+        TypedQuery q = em.createQuery("SELECT CRC FROM CarRentalCompany CRC JOIN CRC.carTypes CT", CarRentalCompany.class);
         List<CarRentalCompany> companies = new ArrayList<CarRentalCompany>(q.getResultList());
         
         List<CarType> availableCarTypes = new LinkedList<CarType>();
@@ -55,23 +66,32 @@ public class CarRentalSession implements CarRentalSessionRemote {
         return availableCarTypes;
     }
 
-    @Override
-    public Quote createQuote(String company, ReservationConstraints constraints) throws ReservationException {
-        try {
-            CarRentalCompany c = em.createQuery("SELECT CRC FROM CarRentalCompany CRC WHERE CRC.name = :company", CarRentalCompany.class)
-                                   .setParameter("company", company)
-                                   .getSingleResult();
-            
-            Quote out = null;
-            if (c != null) {
-                out = c.createQuote(constraints, renter);
-                quotes.add(out);
+    private Quote createQuote(String carRenter, ReservationConstraints constraints) throws ReservationException {
+        List<CarRentalCompany> companies = em.createQuery("SELECT CRC FROM CarRentalCompany CRC JOIN CRC.carTypes CT WHERE CT.name = :carType AND :region MEMBER OF CRC.regions", CarRentalCompany.class)
+                                             .setParameter("region", constraints.getRegion())
+                                             .setParameter("carType", constraints.getCarType())
+                                             .getResultList();
+        Quote q = null;
+
+        System.out.println("Trying to create quote at " + companies.size() + " companies.");
+        for (CarRentalCompany crc : companies) {
+            try {
+                System.out.println("Car types at company: " + crc.getName());
+                for (CarType type : crc.getAllTypes()) {
+                    System.out.println("\t" + type.getName());
+                }
+                q = crc.createQuote(constraints, carRenter);           
+                quotes.add(q);
+                System.out.println("Added quote for: " + crc.getName());
+                return q;
+            } catch (ReservationException e) { 
             }
-            
-            return out;
-        } catch(Exception e) {
-            throw new ReservationException(e);
         }
+
+        if (q == null) {
+            throw new ReservationException("No companies in region " + constraints.getRegion() + " that satisfy the constraints.");
+        }
+        return null;
     }
 
     @Override
@@ -81,36 +101,47 @@ public class CarRentalSession implements CarRentalSessionRemote {
 
     @Override
     public List<Reservation> confirmQuotes() throws ReservationException {
-        List<Reservation> done = new LinkedList<Reservation>();
-        CarRentalCompany c;
+        List<Reservation> reservations = new ArrayList<Reservation>();
+        
         try {
             for (Quote quote : quotes) {
-                c = em.createQuery("SELECT CRC FROM CarRentalCompany CRC WHERE CRC.name = :company", CarRentalCompany.class)
-                      .setParameter("company", quote.getRentalCompany())
-                      .getSingleResult();
+                CarRentalCompany crc = em.find(CarRentalCompany.class, quote.getRentalCompany());
+                System.out.println("Tried to find company with name: " + quote.getRentalCompany() + ", ");
+                System.out.println(crc == null);
                 
-                if (c != null) {
-                    done.add(c.confirmQuote(quote));
+                if (crc != null) {
+                    Reservation newReservation = crc.confirmQuote(quote);
+                    em.persist(newReservation);
+                    System.out.println("persisted reservation " + newReservation);
+                    reservations.add(newReservation);
                 }
-                
-                c = null;
             }
         } catch (Exception e) {
-            for(Reservation r:done) {
-                c = em.createQuery("SELECT CRC FROM CarRentalCompany CRC WHERE CRC.name = :company", CarRentalCompany.class)
-                      .setParameter("company", r.getRentalCompany())
-                      .getSingleResult();
+            for(Reservation r : reservations) {
+                CarRentalCompany crc = em.find(CarRentalCompany.class, r.getRentalCompany());
+                System.out.println("Tried to find company with name: " + r.getRentalCompany() + ", ");
+                System.out.println(crc == null);
                 
-                if (c!= null) {
-                    c.cancelReservation(r);
+                if (crc!= null) {
+                    crc.cancelReservation(r);
+                    em.remove(r);
+                    System.out.println("removed reservation " + r);
                 }
-                
-                c = null;
             }
             
             throw new ReservationException(e);
         }
-        return done;
+
+        // Assume quotes should be cleared.
+        quotes.clear();
+        
+        return reservations;
+    }
+
+    @Override
+    public List<Reservation> confirmQuotes(String carRenter) throws ReservationException {
+        // TODO: does carRenter name matter? what's up with all the extra arguments in this assignment >:(
+        return this.confirmQuotes();
     }
 
     @Override
@@ -119,5 +150,36 @@ public class CarRentalSession implements CarRentalSessionRemote {
             throw new IllegalStateException("name already set");
         }
         renter = name;
+    }
+
+    @Override
+    public Set<CarType> checkForAvailableCarTypes(Date start, Date end) {
+        Set<CarType> availableCars = new HashSet<CarType>();
+        List<CarRentalCompany> companies = em.createQuery("SELECT CRC FROM CarRentalCompany CRC", CarRentalCompany.class).getResultList();
+        
+        for (CarRentalCompany crc : companies) {
+            availableCars.addAll(crc.getAvailableCarTypes(start, end));
+        }
+
+        return availableCars;
+    }
+
+    @Override
+    public String getCheapestCarType(String region, Date start, Date end) {
+        List<CarType> cars = new ArrayList<CarType>();
+        
+        // TODO: need to check 'getAvailableCarTypes(start, end)' here as well -> check that the car does not have a reservation between those dates, need Quote data
+        Query q = em.createQuery("SELECT CT.name FROM CarRentalCompany CRC JOIN CRC.carTypes CT WHERE :region MEMBER OF CRC.regions ORDER BY CT.rentalPricePerDay", String.class);
+        return (String) getFirstResultOrNull(q.setParameter("region", region));
+    }
+
+    @Override
+    public void addQuote(String carRenter, String carType, String region, Date start, Date end) {
+        try {
+            ReservationConstraints rc = new ReservationConstraints(start, end, carType, region);
+            this.createQuote(carRenter, rc);
+        } catch (ReservationException ex) {
+            Logger.getLogger(CarRentalSession.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

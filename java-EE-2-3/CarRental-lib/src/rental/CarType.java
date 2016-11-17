@@ -2,15 +2,12 @@ package rental;
 
 import java.io.Serializable;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Entity
 public class CarType implements Serializable{
     
-    @Id @GeneratedValue
-    private Long id;
-    
+    @Id
     private String name;
     private int nbOfSeats;
     private boolean smokingAllowed;
@@ -85,13 +82,5 @@ public class CarType implements Serializable{
         } else if (!name.equals(other.name))
             return false;
 	return true;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 }

@@ -87,7 +87,11 @@ public abstract class AbstractTestManagement<ReservationSession, ManagerSession>
             Set<String> bestClientsAre = null;
             try {
                 ManagerSession aMgmtSession = getNewManagerSession("CarRent", name);
-                bestClientsAre = new HashSet<String>(getBestClients(aMgmtSession));
+                bestClientsAre = new HashSet<String>();
+                Set<String> bestClients = getBestClients(aMgmtSession);
+                if (bestClients != null) {
+                    bestClientsAre.addAll(bestClients);
+                }
             } catch (Exception e) {
                 throw new ApplicationException(e);
             }
@@ -98,6 +102,8 @@ public abstract class AbstractTestManagement<ReservationSession, ManagerSession>
             } else {
                 System.err.println("Incorrect list of best clients: "
                         + joinToString(bestClientsAre, ','));
+                System.err.println("Correct list is: "
+                        + joinToString(bestClientsShouldBe, ','));
             }
         } else if (cmd.equals("MF")) {
             try {

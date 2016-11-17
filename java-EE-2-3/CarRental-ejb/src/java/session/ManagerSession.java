@@ -1,5 +1,6 @@
 package session;
 
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -8,6 +9,7 @@ import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import rental.Car;
 import rental.CarRentalCompany;
 import rental.CarType;
@@ -16,72 +18,32 @@ import rental.Reservation;
 @Stateless
 public class ManagerSession implements ManagerSessionRemote {
     
+    // TODO move this to a JPQL queries/helper class
+    public static Object getFirstResultOrNull(Query query){
+        List results = query.getResultList();
+        if (results.isEmpty()) return null;
+        return results.get(0);
+    }
+    
     @PersistenceContext
     EntityManager em;
     
     @Override
     public Set<CarType> getCarTypes(String company) {
-        try {
-            List<CarType> results = em.createQuery("SELECT CT FROM CarRentalCompany CRC JOIN CarType CT WHERE CRC.name = :name", CarType.class)
-                                      .setParameter("name", company)
-                                      .getResultList();
-            return new HashSet<CarType>(results);
-        } catch (IllegalArgumentException ex) {
-            Logger.getLogger(ManagerSession.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
+        List<CarType> results = em.createQuery("SELECT CT FROM CarRentalCompany CRC JOIN CRC.carTypes CT WHERE CRC.name = :name", CarType.class)
+                                  .setParameter("name", company)
+                                  .getResultList();
+        return new HashSet<CarType>(results);
     }
 
     @Override
     public Set<Integer> getCarIds(String company, String type) {
-        Set<Integer> out = new HashSet<Integer>();
-        try {
-            List<Car> cars = em.createQuery("SELECT C FROM CarRentalCompany as CRC JOIN Car C JOIN CarType CT WHERE CRC.name = :company AND CT.name = :type")
-                               .setParameter("company", company)
-                               .setParameter("type", type)
-                               .getResultList();
-            
-            for(Car c: cars){
-                out.add(c.getId());
-            }
-        } catch (IllegalArgumentException ex) {
-            Logger.getLogger(ManagerSession.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
-        return out;
-    }
-
-    @Override
-    public int getNumberOfReservations(String company, String type, int id) {
-        try {
-            return em.createQuery("SELECT COUNT(R.id) FROM CarRentalCompany CRC JOIN Car C JOIN Reservation R WHERE CRC.name = :company AND C.id = :id", Integer.class)
-                     .setParameter("company", company)
-                     .setParameter("id", id)
-                     .getFirstResult();
-            
-        } catch (IllegalArgumentException ex) {
-            Logger.getLogger(ManagerSession.class.getName()).log(Level.SEVERE, null, ex);
-            return 0;
-        }
-    }
-
-    @Override
-    public int getNumberOfReservations(String company, String type) {
-        Set<Reservation> out = new HashSet<Reservation>();
-        try {
-            List<Car> cars = em.createQuery("SELECT C FROM CarRentalCompany as CRC JOIN Car C JOIN CarType CT WHERE CRC.name = :company AND CT.name = :type")
-                               .setParameter("company", company)
-                               .setParameter("type", type)
-                               .getResultList();
-            
-            for(Car c: cars){
-                out.addAll(c.getReservations());
-            }
-        } catch (IllegalArgumentException ex) {
-            Logger.getLogger(ManagerSession.class.getName()).log(Level.SEVERE, null, ex);
-            return 0;
-        }
-        return out.size();
+        List<Integer> carIds = em.createQuery("SELECT C.id FROM CarRentalCompany as CRC JOIN CRC.cars C JOIN CRC.carTypes CT WHERE CRC.name = :company AND CT.name = :type")
+                                 .setParameter("company", company)
+                                 .setParameter("type", type)
+                                 .getResultList();
+        
+        return new HashSet<Integer>(carIds);
     }
 
     @Override
@@ -98,17 +60,20 @@ public class ManagerSession implements ManagerSessionRemote {
     }
 
     @Override
-    public Long createCarType(String name, int nrOfSeats, float trunkSpace, double rentalPricePerDay, boolean smokingAllowed) {
-        CarType type = new CarType(name, nrOfSeats, trunkSpace, rentalPricePerDay, smokingAllowed);
+    public String createCarType(String id, int nrOfSeats, float trunkSpace, double rentalPricePerDay, boolean smokingAllowed) {
+        if (em.find(CarType.class, id) != null) {
+            return id;
+        }
+        
+        CarType type = new CarType(id, nrOfSeats, trunkSpace, rentalPricePerDay, smokingAllowed);
         
         em.persist(type);
-        return type.getId();
+        return type.getName();
     }
     
     @Override
-    public Long createCar(Long typeID) {
-        CarType ct = em.createQuery("SELECT CT FROM CarType CT WHERE CT.id = :id", CarType.class).setParameter("id", typeID).getSingleResult();
-        Car car = new Car(ct);
+    public Long createCar(String carTypeID) {
+        Car car = new Car(em.find(CarType.class, carTypeID));
         
         em.persist(car);
         return (long) car.getId();
@@ -116,29 +81,73 @@ public class ManagerSession implements ManagerSessionRemote {
 
     @Override
     public void addRegions(String company, List<String> regions) {
-        // TODO: refactor queries
-        CarRentalCompany crc = em.createQuery("SELECT CRC FROM CarRentalCompany CRC WHERE CRC.name = :company", CarRentalCompany.class).setParameter("company", company).getSingleResult();
+        CarRentalCompany crc = em.find(CarRentalCompany.class, company);
         crc.addRegions(regions);
         
         em.persist(crc);
     }
 
     @Override
-    public void addCarType(String company, Long id) {
-        CarRentalCompany crc = em.createQuery("SELECT CRC FROM CarRentalCompany CRC WHERE CRC.name = :company", CarRentalCompany.class).setParameter("company", company).getSingleResult();
-        CarType ct = em.createQuery("SELECT CT FROM CarType CT WHERE CT.id = :id", CarType.class).setParameter("id", id).getSingleResult();
-        crc.addCarType(ct);
-        
+    public void addCarType(String company, String id) {
+        CarRentalCompany crc = em.find(CarRentalCompany.class, company);
+        crc.addCarType(em.find(CarType.class, id));
         em.persist(crc);
     }
 
     @Override
     public void addCar(String company, Long id) {
-        CarRentalCompany crc = em.createQuery("SELECT CRC FROM CarRentalCompany CRC WHERE CRC.name = :company", CarRentalCompany.class).setParameter("company", company).getSingleResult();
-        Car car = em.createQuery("SELECT C FROM Car C WHERE C.id = :id", Car.class).setParameter("id", id).getSingleResult();
+        CarRentalCompany crc = em.find(CarRentalCompany.class, company);
+        Car car = em.createQuery("SELECT C FROM Car C WHERE C.id = :id", Car.class)
+                    .setParameter("id", id)
+                    .getSingleResult();
         crc.addCar(car);
         
         em.persist(crc);
+    }
+
+    @Override
+    public Set<String> getBestClients() {
+        /* Jago pls fix
+        List<Object[]> bestClients = em.createQuery("SELECT R.carRenter, COUNT(R) as nr FROM Reservation R WHERE nr = (SELECT MAX(COUNT(R)) FROM Reservation R GROUP BY R.carRenter) GROUP BY R.carRenter").getResultList();
+        Set<String> results = new HashSet<String>();
+        
+        for (Object[] array : bestClients) {
+            results.add((String) array[0]);
+        }
+        */
+        
+        List<Object[]> bestClients = em.createQuery("SELECT R.carRenter, COUNT(R) as amount FROM Reservation R GROUP BY R.carRenter ORDER BY amount DESC")
+                                       .getResultList();
+        
+        Set<String> results = new HashSet<String>();
+        Long max = (Long) bestClients.get(0)[1];
+        
+        for (Object[] array : bestClients) {
+            Long count = (Long) array[1];
+            if (count.equals(max)) {
+                results.add((String) array[0]);
+            }
+        }
+        
+        return results;
+    }
+
+    @Override
+    public CarType getMostPopularCarTypeIn(String carRentalName, int year) {
+        String carType = (String) getFirstResultOrNull(em.createQuery("SELECT R.carType FROM Reservation R WHERE R.rentalCompany = :company AND R.startDate > :thisYear AND R.startDate < :nextYear GROUP BY R.carType ORDER BY COUNT(R.id) DESC")
+                                                         .setParameter("company", carRentalName)
+                                                         .setParameter("thisYear", (new GregorianCalendar(year, 0, 0)).getTime())
+                                                         .setParameter("nextYear", (new GregorianCalendar(year + 1, 0, 0)).getTime()));
+        return em.find(CarType.class, carType);
+    }
+
+    @Override
+    public int getNumberOfReservationsForCarType(String carRentalName, String carType) {
+        Long count = (Long) getFirstResultOrNull(em.createQuery("SELECT count(R) FROM Reservation R WHERE R.rentalCompany = :company AND R.carType = :type")
+                                                   .setParameter("company", carRentalName)
+                                                   .setParameter("type", carType));
+        
+        return count.intValue();
     }
 
 }

@@ -2,20 +2,21 @@ package rental;
 
 import java.io.Serializable;
 import java.util.Date;
+import javax.persistence.MappedSuperclass;
 import javax.persistence.Temporal;
-import static javax.persistence.TemporalType.DATE;
 
+@MappedSuperclass
 public class Quote implements Serializable {
-    
-    @Temporal(DATE)
+
+    @Temporal(javax.persistence.TemporalType.DATE)
     private Date startDate;
-    @Temporal(DATE)
+    @Temporal(javax.persistence.TemporalType.DATE)
     private Date endDate;
     private String carRenter;
     private String rentalCompany;
     private String carType;
     private double rentalPrice;
-    
+
     /***************
      * CONSTRUCTOR *
      ***************/
@@ -28,32 +29,59 @@ public class Quote implements Serializable {
         this.carType = carType;
         this.rentalPrice = rentalPrice;
     }
-    
-    /* TODO: will this cause problems ? */
-    public Quote() {}
+
+    public Quote() { }
+
+    /*********************
+     * GETTERS & SETTERS *
+     ********************/
 
     public Date getStartDate() {
         return startDate;
     }
 
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+    
     public Date getEndDate() {
         return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
 
     public String getCarRenter() {
         return carRenter;
     }
 
+    public void setCarRenter(String carRenter) {
+        this.carRenter = carRenter;
+    }
+
     public String getRentalCompany() {
         return rentalCompany;
+    }
+
+    public void setRentalCompany(String rentalCompany) {
+        this.rentalCompany = rentalCompany;
+    }
+
+    public String getCarType() {
+	return carType;
+    }
+    
+    public void setCarType(String carType) {
+        this.carType = carType;
     }
 
     public double getRentalPrice() {
         return rentalPrice;
     }
     
-    public String getCarType() {
-	return carType;
+    public void setRentalPrice(double rentalPrice) {
+        this.rentalPrice = rentalPrice;
     }
     
     /*************

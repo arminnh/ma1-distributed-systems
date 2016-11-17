@@ -12,19 +12,21 @@ public interface ManagerSessionRemote {
     
     public Set<Integer> getCarIds(String company,String type);
     
-    public int getNumberOfReservations(String company, String type, int carId);
-    
-    public int getNumberOfReservations(String company, String type);
-      
     public void createCarRentalCompany(String name);
+
+    public String createCarType(String id, int nrOfSeats, float trunkSpace, double rentalPricePerDay, boolean smokingAllowed);
+
+    public Long createCar(String carTypeID);
     
     public void addRegions(String company, List<String> regions);
     
-    public void addCarType(String company, Long id);
+    public void addCarType(String company, String id);
     
     public void addCar(String company, Long id);
 
-    public Long createCarType(String name, int nrOfSeats, float trunkSpace, double rentalPricePerDay, boolean smokingAllowed);
+    public Set<String> getBestClients();
 
-    public Long createCar(Long typeID);
+    public CarType getMostPopularCarTypeIn(String carRentalCompanyName, int year);
+
+    public int getNumberOfReservationsForCarType(String carRentalName, String carType);
 }

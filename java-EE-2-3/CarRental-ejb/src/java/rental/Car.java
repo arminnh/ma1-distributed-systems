@@ -8,6 +8,7 @@ import static javax.persistence.CascadeType.PERSIST;
 import static javax.persistence.CascadeType.REMOVE;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import static javax.persistence.GenerationType.AUTO;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -15,7 +16,7 @@ import javax.persistence.OneToMany;
 @Entity
 public class Car implements Serializable{
     
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy=AUTO)
     private int id;
     
     @ManyToOne(cascade=PERSIST)

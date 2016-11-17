@@ -6,6 +6,7 @@
     <class>rental.CarRentalCompany</class>
     <class>rental.CarType</class>
     <class>rental.Reservation</class>
+    <!--<class>rental.Quote</class>-->
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
       <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
