@@ -73,21 +73,22 @@ public class CarRentalSession implements CarRentalSessionRemote {
                                              .getResultList();
         Quote q = null;
 
-        System.out.println("Trying to create quote at " + companies.size() + " companies.");
+        if(companies.isEmpty())
+            throw new ReservationException("No companies in region " + constraints.getRegion() + " that satisfy the constraints.");
+        
         for (CarRentalCompany crc : companies) {
             try {
-                System.out.println("Car types at company: " + crc.getName());
-                for (CarType type : crc.getAllTypes()) {
-                    System.out.println("\t" + type.getName());
-                }
-                q = crc.createQuote(constraints, carRenter);           
-                quotes.add(q);
-                System.out.println("Added quote for: " + crc.getName());
-                return q;
-            } catch (ReservationException e) { 
+            System.out.println("Car types at company: " + crc.getName());
+            for (CarType type : crc.getAllTypes()) {
+                System.out.println("\t" + type.getName());
             }
+            q = crc.createQuote(constraints, carRenter);           
+            quotes.add(q);
+            System.out.println("Added quote for: " + crc.getName());
+            return q;
+            } catch (ReservationException e) {}
         }
-
+        
         if (q == null) {
             throw new ReservationException("No companies in region " + constraints.getRegion() + " that satisfy the constraints.");
         }
@@ -165,21 +166,23 @@ public class CarRentalSession implements CarRentalSessionRemote {
     }
 
     @Override
-    public String getCheapestCarType(String region, Date start, Date end) {
-        List<CarType> cars = new ArrayList<CarType>();
+    public String getCheapestCarType(String region, Date start, Date end) {        
+        Query q = em.createQuery(""
+                + "SELECT CT.name "
+                + "FROM CarRentalCompany CRC JOIN CRC.carTypes CT JOIN CRC.cars C "
+                + "WHERE :region MEMBER OF CRC.regions AND C.type = CT "
+                + "AND C.id NOT IN ( "
+                +   "SELECT R.carId "
+                +   "FROM CarRentalCompany CRC JOIN CRC.cars CC JOIN CC.reservations CR JOIN Reservation R "
+                +   "WHERE R.startDate <= :end AND R.endDate >= :start AND :region MEMBER OF CRC.regions ) "
+                + "ORDER BY CT.rentalPricePerDay", String.class);
         
-        // TODO: need to check 'getAvailableCarTypes(start, end)' here as well -> check that the car does not have a reservation between those dates, need Quote data
-        Query q = em.createQuery("SELECT CT.name FROM CarRentalCompany CRC JOIN CRC.carTypes CT WHERE :region MEMBER OF CRC.regions ORDER BY CT.rentalPricePerDay", String.class);
-        return (String) getFirstResultOrNull(q.setParameter("region", region));
+        return (String) getFirstResultOrNull(q.setParameter("region", region).setParameter("start",start).setParameter("end", end));
     }
 
     @Override
-    public void addQuote(String carRenter, String carType, String region, Date start, Date end) {
-        try {
-            ReservationConstraints rc = new ReservationConstraints(start, end, carType, region);
-            this.createQuote(carRenter, rc);
-        } catch (ReservationException ex) {
-            Logger.getLogger(CarRentalSession.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public void addQuote(String carRenter, String carType, String region, Date start, Date end) throws ReservationException{
+        ReservationConstraints rc = new ReservationConstraints(start, end, carType, region);
+        this.createQuote(carRenter, rc);
     }
 }
