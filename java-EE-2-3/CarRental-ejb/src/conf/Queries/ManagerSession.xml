@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings
+        version="2.1"
+        xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence/orm
+            http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd">
+       
+    <named-query name="ManagerSession.getCarTypes">
+        <query>
+            SELECT CT 
+            FROM CarRentalCompany CRC JOIN CRC.carTypes CT 
+            WHERE CRC.name = :name
+        </query>
+    </named-query>
+    
+    <named-query name="ManagerSession.getCarIds">
+        <query>
+            SELECT C.id 
+            FROM CarRentalCompany as CRC JOIN CRC.cars C JOIN CRC.carTypes CT 
+            WHERE CRC.name = :company AND CT.name = :type
+        </query>
+    </named-query>
+    
+    <named-query name="ManagerSession.addCar">
+        <query>
+            SELECT C 
+            FROM Car C 
+            WHERE C.id = :id
+        </query>
+    </named-query>
+    
+    <named-query name="ManagerSession.getBestClients">
+        <query>
+            SELECT R.carRenter, COUNT(R) as amount 
+            FROM Reservation R 
+            GROUP BY R.carRenter 
+            ORDER BY amount DESC
+        </query>
+    </named-query>  
+    
+    <named-query name="ManagerSession.getMostPopularCarTypeIn">
+        <query>
+            <![CDATA[
+            SELECT R.carType 
+            FROM Reservation R 
+            WHERE 
+                R.rentalCompany = :company 
+                AND R.startDate > :thisYear 
+                AND R.startDate < :nextYear 
+            GROUP BY R.carType 
+            ORDER BY COUNT(R.id) DESC]]>
+        </query>
+    </named-query>  
+    
+    <named-query name="ManagerSession.getNumberOfReservationsForCarType">
+        <query>
+            SELECT count(R) 
+            FROM Reservation R 
+            WHERE R.rentalCompany = :company AND R.carType = :type
+        </query>
+    </named-query>  
+    
+</entity-mappings>

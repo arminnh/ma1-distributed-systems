@@ -6,14 +6,11 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ejb.Stateful;
 import javax.persistence.EntityManager;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import javax.persistence.TypedQuery;
 import rental.CarRentalCompany;
 import rental.CarType;
 import rental.Quote;
@@ -47,30 +44,22 @@ public class CarRentalSession implements CarRentalSessionRemote {
 
     @Override
     public Set<String> getAllRentalCompanies() {
-        return new HashSet<String>(em.createQuery("SELECT CRC.name FROM CarRentalCompany CRC", String.class).getResultList());
+        return new HashSet<String>(em.createNamedQuery("CarRentalSession.getAllRentalCompanies", String.class).getResultList());
     }
     
     @Override
     public List<CarType> getAvailableCarTypes(Date start, Date end) {
-        // TODO: filter out possibilities here so getAvailableCarTypes(start, end) is not necessary
-        List<CarType> availableCarTypes = em.createQuery(""
-                + "SELECT DISTINCT C.type "
-                + "FROM Car C "
-                + "WHERE C.id NOT IN ("
-                +   "SELECT R.carId "
-                +   "FROM Reservation R "
-                +   "WHERE R.startDate <= :end AND R.endDate >= :start"
-                + ")"
-                , CarType.class)
-                .setParameter("start",start)
-                .setParameter("end", end)
-                .getResultList();
+        List<CarType> availableCarTypes = em.createNamedQuery("CarRentalSession.getAvailableCarTypes"
+                                            , CarType.class)
+                                            .setParameter("start",start)
+                                            .setParameter("end", end)
+                                            .getResultList();
 
         return availableCarTypes;
     }
 
     private Quote createQuote(String carRenter, ReservationConstraints constraints) throws ReservationException {
-        List<CarRentalCompany> companies = em.createQuery("SELECT CRC FROM CarRentalCompany CRC JOIN CRC.carTypes CT WHERE CT.name = :carType AND :region MEMBER OF CRC.regions", CarRentalCompany.class)
+        List<CarRentalCompany> companies = em.createNamedQuery("CarRentalSession.createQuote", CarRentalCompany.class)
                                              .setParameter("region", constraints.getRegion())
                                              .setParameter("carType", constraints.getCarType())
                                              .getResultList();
@@ -158,16 +147,7 @@ public class CarRentalSession implements CarRentalSessionRemote {
 
     @Override
     public String getCheapestCarType(String region, Date start, Date end) {        
-        Query q = em.createQuery(""
-                + "SELECT CT.name "
-                + "FROM CarRentalCompany CRC JOIN CRC.carTypes CT JOIN CRC.cars C "
-                + "WHERE :region MEMBER OF CRC.regions AND C.type = CT "
-                + "AND C.id NOT IN ( "
-                +   "SELECT R.carId "
-                +   "FROM Reservation R "
-                +   "WHERE R.startDate <= :end AND R.endDate >= :start ) "
-                + "ORDER BY CT.rentalPricePerDay", String.class);
-        
+        Query q = em.createNamedQuery("CarRentalSession.getCheapestCarType", String.class);
         return (String) getFirstResultOrNull(q.setParameter("region", region).setParameter("start",start).setParameter("end", end));
     }
 

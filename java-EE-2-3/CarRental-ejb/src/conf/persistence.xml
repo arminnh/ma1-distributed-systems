@@ -2,14 +2,20 @@
 <persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
   <persistence-unit name="CarRental-ejbPU" transaction-type="JTA">
     <jta-data-source>jdbc/sample</jta-data-source>
+    
+    <!-- These files contain named queries. -->
+    <!-- Query names always match the function they are used in -->
+    <mapping-file>META-INF/Queries/ManagerSession.xml</mapping-file>
+    <mapping-file>META-INF/Queries/CarRentalSession.xml</mapping-file>
+
     <class>rental.Car</class>
     <class>rental.CarRentalCompany</class>
     <class>rental.CarType</class>
     <class>rental.Reservation</class>
-    <!--<class>rental.Quote</class>-->
+    
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
       <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
-    </properties>
+    </properties>    
   </persistence-unit>
 </persistence>

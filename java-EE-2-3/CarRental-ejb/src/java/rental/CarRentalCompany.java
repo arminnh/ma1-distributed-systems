@@ -1,6 +1,5 @@
 package rental;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -19,7 +18,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
 @Entity
-public class CarRentalCompany implements Serializable {
+public class CarRentalCompany {
 
     private static Logger logger = Logger.getLogger(CarRentalCompany.class.getName());
     

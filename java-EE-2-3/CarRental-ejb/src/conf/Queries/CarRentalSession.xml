@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings
+        version="2.1"
+        xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence/orm
+            http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd">
+       
+    <named-query name="CarRentalSession.getAllRentalCompanies">
+        <query>
+            SELECT CRC.name 
+            FROM CarRentalCompany CRC
+        </query>
+    </named-query>
+    
+    <named-query name="CarRentalSession.getAvailableCarTypes">
+        <query>
+            <![CDATA[
+            SELECT DISTINCT C.type 
+            FROM Car C 
+            WHERE C.id NOT IN (
+                SELECT R.carId 
+                FROM Reservation R
+                WHERE R.startDate <= :end AND R.endDate >= :start
+            )]]>
+        </query>
+    </named-query>
+    
+    <named-query name="CarRentalSession.createQuote">
+        <query>
+            SELECT CRC 
+            FROM CarRentalCompany CRC JOIN CRC.carTypes CT 
+            WHERE CT.name = :carType AND :region MEMBER OF CRC.regions
+        </query>
+    </named-query>
+    
+    <named-query name="CarRentalSession.getCheapestCarType">
+        <query>
+            <![CDATA[
+            SELECT CT.name
+            FROM CarRentalCompany CRC JOIN CRC.carTypes CT JOIN CRC.cars C
+            WHERE :region MEMBER OF CRC.regions AND C.type = CT
+            AND C.id NOT IN (
+                SELECT R.carId
+                FROM Reservation R
+                WHERE R.startDate <= :end AND R.endDate >= :start )
+            ORDER BY CT.rentalPricePerDay
+            ]]>
+        </query>
+    </named-query>
+
+</entity-mappings>
