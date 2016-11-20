@@ -53,16 +53,19 @@ public class CarRentalSession implements CarRentalSessionRemote {
     @Override
     public List<CarType> getAvailableCarTypes(Date start, Date end) {
         // TODO: filter out possibilities here so getAvailableCarTypes(start, end) is not necessary
-        TypedQuery q = em.createQuery("SELECT CRC FROM CarRentalCompany CRC JOIN CRC.carTypes CT", CarRentalCompany.class);
-        List<CarRentalCompany> companies = new ArrayList<CarRentalCompany>(q.getResultList());
-        
-        List<CarType> availableCarTypes = new LinkedList<CarType>();
-        for(CarRentalCompany crc : companies) {
-            for(CarType ct : crc.getAvailableCarTypes(start, end)) {
-                if(!availableCarTypes.contains(ct))
-                    availableCarTypes.add(ct);
-            }
-        }
+        List<CarType> availableCarTypes = em.createQuery(""
+                + "SELECT DISTINCT C.type "
+                + "FROM Car C "
+                + "WHERE C.id NOT IN ("
+                +   "SELECT R.carId "
+                +   "FROM Reservation R "
+                +   "WHERE R.startDate <= :end AND R.endDate >= :start"
+                + ")"
+                , CarType.class)
+                .setParameter("start",start)
+                .setParameter("end", end)
+                .getResultList();
+
         return availableCarTypes;
     }
 
@@ -154,18 +157,6 @@ public class CarRentalSession implements CarRentalSessionRemote {
     }
 
     @Override
-    public Set<CarType> checkForAvailableCarTypes(Date start, Date end) {
-        Set<CarType> availableCars = new HashSet<CarType>();
-        List<CarRentalCompany> companies = em.createQuery("SELECT CRC FROM CarRentalCompany CRC", CarRentalCompany.class).getResultList();
-        
-        for (CarRentalCompany crc : companies) {
-            availableCars.addAll(crc.getAvailableCarTypes(start, end));
-        }
-
-        return availableCars;
-    }
-
-    @Override
     public String getCheapestCarType(String region, Date start, Date end) {        
         Query q = em.createQuery(""
                 + "SELECT CT.name "
@@ -173,8 +164,8 @@ public class CarRentalSession implements CarRentalSessionRemote {
                 + "WHERE :region MEMBER OF CRC.regions AND C.type = CT "
                 + "AND C.id NOT IN ( "
                 +   "SELECT R.carId "
-                +   "FROM CarRentalCompany CRC JOIN CRC.cars CC JOIN CC.reservations CR JOIN Reservation R "
-                +   "WHERE R.startDate <= :end AND R.endDate >= :start AND :region MEMBER OF CRC.regions ) "
+                +   "FROM Reservation R "
+                +   "WHERE R.startDate <= :end AND R.endDate >= :start ) "
                 + "ORDER BY CT.rentalPricePerDay", String.class);
         
         return (String) getFirstResultOrNull(q.setParameter("region", region).setParameter("start",start).setParameter("end", end));

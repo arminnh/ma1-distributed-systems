@@ -48,7 +48,7 @@ public class Main extends AbstractTestManagement<CarRentalSessionRemote, Manager
     protected void checkForAvailableCarTypes(CarRentalSessionRemote session, Date start, Date end) throws Exception {
         // void function, just need to print stuff? or return exception when something is wrong?
         System.out.println("Available car types:");
-        for (CarType c : session.checkForAvailableCarTypes(start, end)) {
+        for (CarType c : session.getAvailableCarTypes(start, end)) {
             System.out.println("\t\t" + c.toString());
         }
     }
