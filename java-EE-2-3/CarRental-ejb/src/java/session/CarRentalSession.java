@@ -110,17 +110,6 @@ public class CarRentalSession implements CarRentalSessionRemote {
                 }
             }
         } catch (Exception e) {
-            for(Reservation r : reservations) {
-                CarRentalCompany crc = em.find(CarRentalCompany.class, r.getRentalCompany());
-                System.out.println("Tried to find company with name: " + r.getRentalCompany() + ", ");
-                System.out.println(crc == null);
-                
-                if (crc!= null) {
-                    crc.cancelReservation(r);
-                    em.remove(r);
-                    System.out.println("removed reservation " + r);
-                }
-            }
             
             throw new ReservationException(e);
         }
