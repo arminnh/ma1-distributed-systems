@@ -15,15 +15,6 @@ import rental.CarType;
 @Stateless
 public class ManagerSession implements ManagerSessionRemote {
 
-    // TODO move this to a JPQL queries/helper class
-    public static Object getFirstResultOrNull(Query query) {
-        List results = query.getResultList();
-        if (results.isEmpty()) {
-            return null;
-        }
-        return results.get(0);
-    }
-
     @PersistenceContext
     EntityManager em;
 
@@ -99,15 +90,6 @@ public class ManagerSession implements ManagerSessionRemote {
 
     @Override
     public Set<String> getBestClients() {
-        /* Jago pls fix
-        List<Object[]> bestClients = em.createQuery("SELECT R.carRenter, COUNT(R) as nr FROM Reservation R WHERE nr = (SELECT MAX(COUNT(R)) FROM Reservation R GROUP BY R.carRenter) GROUP BY R.carRenter").getResultList();
-        Set<String> results = new HashSet<String>();
-        
-        for (Object[] array : bestClients) {
-            results.add((String) array[0]);
-        }
-         */
-
         List<Object[]> bestClients = em.createNamedQuery("ManagerSession.getBestClients")
                 .getResultList();
 
@@ -142,4 +124,11 @@ public class ManagerSession implements ManagerSessionRemote {
         return count.intValue();
     }
 
+    public static Object getFirstResultOrNull(Query query) {
+        List results = query.getResultList();
+        if (results.isEmpty()) {
+            return null;
+        }
+        return results.get(0);
+    }
 }

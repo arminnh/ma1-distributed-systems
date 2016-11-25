@@ -20,21 +20,6 @@ import rental.ReservationException;
 
 @Stateful
 public class CarRentalSession implements CarRentalSessionRemote {
-    
-    // TODO move this to a JPQL queries/helper class
-    public static Object getSingleResultOrNull(Query query){
-        List results = query.getResultList();
-        if (results.isEmpty()) return null;
-        else if (results.size() == 1) return results.get(0);
-        throw new NonUniqueResultException();
-    }
-    
-    // TODO move this to a JPQL queries/helper class
-    public static Object getFirstResultOrNull(Query query){
-        List results = query.getResultList();
-        if (results.isEmpty()) return null;
-        return results.get(0);
-    }
 
     @PersistenceContext
     EntityManager em;
@@ -121,12 +106,6 @@ public class CarRentalSession implements CarRentalSessionRemote {
     }
 
     @Override
-    public List<Reservation> confirmQuotes(String carRenter) throws ReservationException {
-        // TODO: does carRenter name matter? what's up with all the extra arguments in this assignment >:(
-        return this.confirmQuotes();
-    }
-
-    @Override
     public void setRenterName(String name) {
         if (renter != null) {
             throw new IllegalStateException("name already set");
@@ -137,7 +116,13 @@ public class CarRentalSession implements CarRentalSessionRemote {
     @Override
     public String getCheapestCarType(String region, Date start, Date end) {        
         Query q = em.createNamedQuery("CarRentalSession.getCheapestCarType", String.class);
-        return (String) getFirstResultOrNull(q.setParameter("region", region).setParameter("start",start).setParameter("end", end));
+        
+        List<String> results = q.setParameter("region", region).setParameter("start",start).setParameter("end", end).getResultList();
+        if (results.isEmpty()) {
+            return null;
+        } else {
+            return results.get(0);
+        }
     }
 
     @Override

@@ -37,7 +37,6 @@ public class Reservation extends Quote {
         this.id = id;
     }
     
-    // TODO, what to do with this?
     public int getCarId() {
     	return carId;
     }

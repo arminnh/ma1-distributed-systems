@@ -40,7 +40,6 @@ public class Main extends AbstractTestManagement<CarRentalSessionRemote, Manager
 
     @Override
     protected ManagerSessionRemote getNewManagerSession(String name, String carRentalName) throws Exception {
-        // TODO: ask assistant what's up with the carRentalName here
         return (ManagerSessionRemote) (new InitialContext()).lookup(ManagerSessionRemote.class.getName());
     }
 
@@ -60,7 +59,7 @@ public class Main extends AbstractTestManagement<CarRentalSessionRemote, Manager
 
     @Override
     protected List<Reservation> confirmQuotes(CarRentalSessionRemote session, String carRenter) throws Exception {
-        return session.confirmQuotes(carRenter);
+        return session.confirmQuotes();
     }
 
     @Override
