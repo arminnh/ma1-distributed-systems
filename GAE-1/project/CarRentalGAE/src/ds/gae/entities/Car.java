@@ -9,13 +9,13 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
-
+@Entity
 public class Car {
 	
-	
+	@Id
     private int id;
 	
-    
+    @ManyToOne
 	private CarType type;
 	
 	

@@ -2,14 +2,17 @@ package ds.gae.entities;
 
 import java.util.Date;
 
+import javax.persistence.Entity;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Temporal;
 
 
+@MappedSuperclass
 public class Quote {
 	
+	@Temporal(javax.persistence.TemporalType.DATE)
     private Date startDate;
-	
+	@Temporal(javax.persistence.TemporalType.DATE)
 	private Date endDate;
     private String carRenter;
     private String rentalCompany;

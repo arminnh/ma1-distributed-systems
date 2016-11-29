@@ -11,9 +11,11 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.GenerationType;
 
 import com.google.appengine.api.datastore.Key;
@@ -27,6 +29,8 @@ public class CarRentalCompany {
 	
 	@Id
 	private String name;
+	
+	@OneToMany(cascade = CascadeType.PERSIST)
 	private Set<Car> cars;
 	private Map<String,CarType> carTypes = new HashMap<String, CarType>();
 

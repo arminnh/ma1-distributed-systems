@@ -7,10 +7,11 @@ import javax.persistence.Id;
 
 import com.google.appengine.api.datastore.Key;
 
-
+@Entity
 public class CarType {
 	
-
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Key id;
     
     private String name;
