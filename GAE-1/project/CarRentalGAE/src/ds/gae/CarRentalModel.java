@@ -175,7 +175,7 @@ public class CarRentalModel {
     public Collection<Integer> getCarIdsByCarType(String crcName, CarType carType) {
     	Collection<Integer> out = new ArrayList<Integer>();
     	for (Car c : getCarsByCarType(crcName, carType)) {
-    		out.add(c.getId());
+    		out.add((int)c.getId());
     	}
     	return out;
     }
@@ -232,7 +232,10 @@ public class CarRentalModel {
 		EntityManager em = EMF.get().createEntityManager();
 		
 		try {
-			em.persist(company);
+			Car c = new Car();
+			em.persist(c);
+			// FIXME: Persist companies again
+			//em.persist(company);
 		} finally {
 			em.close();
 		}

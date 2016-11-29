@@ -32,7 +32,7 @@ public class Quote {
         this.rentalPrice = rentalPrice;
     }
     
-    Quote(){}
+    public Quote(){}
 
     public Date getStartDate() {
         return startDate;

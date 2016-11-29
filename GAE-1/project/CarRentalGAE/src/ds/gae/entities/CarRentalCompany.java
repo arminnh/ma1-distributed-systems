@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.jdo.annotations.NotPersistent;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,6 +20,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.GenerationType;
 
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.datanucleus.annotations.Unowned;
 
 import ds.gae.ReservationException;
 
@@ -32,6 +34,8 @@ public class CarRentalCompany {
 	
 	@OneToMany(cascade = CascadeType.PERSIST)
 	private Set<Car> cars;
+	
+	@OneToMany(cascade = CascadeType.PERSIST)
 	private Map<String,CarType> carTypes = new HashMap<String, CarType>();
 
 	/***************
@@ -149,7 +153,7 @@ public class CarRentalCompany {
 	                + " are unavailable from " + quote.getStartDate() + " to " + quote.getEndDate());
 		Car car = availableCars.get((int)(Math.random()*availableCars.size()));
 		
-		Reservation res = new Reservation(quote, car.getId());
+		Reservation res = new Reservation(quote, (int)car.getId());
 		car.addReservation(res);
 		return res;
 	}
