@@ -41,11 +41,13 @@ public class CarRentalModel {
 	 */
 	public Set<String> getCarTypesNames(String crcName) {
 		EntityManager em = EMF.get().createEntityManager();
+		Set<String> results = new HashSet<String>();
 		try {
-			return new HashSet(em.createQuery("SELECT CarType.name FROM CarTypes").getResultList());
+			results.addAll(em.createQuery("SELECT CarType.name FROM CarTypes").getResultList());
 		} finally {
 			em.close();
 		}
+		return results;
 	}
 
     /**
@@ -53,7 +55,7 @@ public class CarRentalModel {
      *
      * @return	the list of car rental companies
      */
-    public Collection<String> getAllRentalCompanyNames() {
+    public List<String> getAllRentalCompanyNames() {
 		EntityManager em = EMF.get().createEntityManager();
 		try {
 			return em.createQuery("SELECT CRC.name FROM CarRentalCompany CRC").getResultList();
@@ -229,13 +231,9 @@ public class CarRentalModel {
 	}	
 	
 	public void createCarRentalCompany(CarRentalCompany company) {
-		EntityManager em = EMF.get().createEntityManager();
-		
+		EntityManager em = EMF.get().createEntityManager();		
 		try {
-			Car c = new Car();
-			em.persist(c);
-			// FIXME: Persist companies again
-			//em.persist(company);
+			em.persist(company);
 		} finally {
 			em.close();
 		}

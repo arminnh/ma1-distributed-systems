@@ -11,8 +11,8 @@ import com.google.appengine.api.datastore.Key;
 public class CarType {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Key id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Key key;
     
     private String name;
     private int nbOfSeats;
@@ -32,8 +32,6 @@ public class CarType {
         this.rentalPricePerDay = rentalPricePerDay;
         this.smokingAllowed = smokingAllowed;
     }
-    
-    public CarType(){}
 
     public String getName() {
     	return name;

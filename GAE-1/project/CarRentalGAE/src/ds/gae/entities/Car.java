@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.jdo.annotations.Persistent;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,19 +13,34 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.datanucleus.annotations.Unowned;
 
 @Entity
 public class Car {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Key k;
+	private Key key;
 	
     private int id;
 	
+    /*
+     * The unowned annotation solves this error:
+     * Attempt to assign child with key "CarType(4890627720347648)" to parent with key "Car(no-id-yet)". 
+     * Parent keys are immutable. Basically it's already a child of CarRentalCompany (i think) and therefore
+     * cannot be asigned car as a parent, thus it is an "unowned" relationship? -> TODO: verify this
+     * 
+     * GAE docs say:
+     * "A relationship between persistent objects can be described as owned, 
+     * where one of the objects cannot exist without the other, or unowned, 
+     * where both objects can exist independently of their relationship with one another"
+     * --> This relationship than seems like it is unowned, as the cartype can exist without the 
+     * 	   car: e.g. when other cars of this type exist.
+     */
+    @Unowned
     @ManyToOne(cascade=CascadeType.PERSIST)
 	private CarType type;
-	
+
 	@OneToMany(cascade=CascadeType.PERSIST)
     private Set<Reservation> reservations;
 
@@ -40,8 +54,6 @@ public class Car {
         this.reservations = new HashSet<Reservation>();
     }
     
-    public Car(){}
-
     /******
      * ID *
      ******/

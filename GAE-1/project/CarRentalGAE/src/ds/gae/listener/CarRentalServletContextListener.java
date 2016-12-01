@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
@@ -86,6 +87,20 @@ public class CarRentalServletContextListener implements ServletContextListener {
 					Float.parseFloat(csvReader.nextToken()),
 					Double.parseDouble(csvReader.nextToken()),
 					Boolean.parseBoolean(csvReader.nextToken()));
+			
+			/*
+			 * Peristing here already fixes a weird cross group transaction error.
+			 * Having the cartypes in dB already doesn't seem unlogical though.
+			 * TODO: move this to a more suitable place. Maybe make an "addCarType" method 
+			 * in the carrentalmodel
+			 */
+			EntityManager em = EMF.get().createEntityManager();
+			try {
+				em.persist(type);
+			} finally {
+				em.close();
+			}
+			
 			//create N new cars with given type, where N is the 5th field
 			for (int i = Integer.parseInt(csvReader.nextToken()); i > 0; i--) {
 				cars.add(new Car(carId++, type));

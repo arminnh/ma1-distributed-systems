@@ -3,12 +3,20 @@ package ds.gae.entities;
 import java.util.Date;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Temporal;
 
+import com.google.appengine.api.datastore.Key;
 
+@Entity
 @MappedSuperclass
 public class Quote {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Key key;
 	
 	@Temporal(javax.persistence.TemporalType.DATE)
     private Date startDate;

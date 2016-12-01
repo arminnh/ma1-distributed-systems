@@ -10,9 +10,9 @@ import com.google.appengine.api.datastore.Key;
 @Entity
 public class Reservation extends Quote {
 	
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Key id;
+//	@Id
+//	@GeneratedValue(strategy = GenerationType.AUTO)
+//	private Key id;
 	
     private int carId;
     
