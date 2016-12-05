@@ -11,17 +11,12 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.jdo.annotations.NotPersistent;
-import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
-import javax.persistence.GenerationType;
 
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.datanucleus.annotations.Unowned;
 
 import ds.gae.ReservationException;
 
@@ -33,13 +28,12 @@ public class CarRentalCompany {
 	@Id
 	private String name;
 	
-	@OneToMany(cascade = CascadeType.PERSIST)
-	@Basic
+	@OneToMany(cascade = CascadeType.ALL)
 	private Set<Car> cars;
 	
-	@OneToMany(cascade = CascadeType.PERSIST)
-	@Basic
+	@ManyToMany(cascade = CascadeType.ALL)
 	private Map<String,CarType> carTypes = new HashMap<String, CarType>();
+
 
 	/***************
 	 * CONSTRUCTOR *
@@ -68,6 +62,10 @@ public class CarRentalCompany {
 	/*************
 	 * CAR TYPES *
 	 *************/
+	
+	public void setCarTypes(Map<String, CarType> carTypes) {
+		this.carTypes = carTypes;
+	}
 
 	public Collection<CarType> getAllCarTypes() {
 		return carTypes.values();
@@ -95,6 +93,8 @@ public class CarRentalCompany {
 		}
 		return availableCarTypes;
 	}
+	
+	
 	
 	/*********
 	 * CARS *

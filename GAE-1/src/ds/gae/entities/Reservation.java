@@ -1,14 +1,15 @@
 package ds.gae.entities;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 
-import com.google.appengine.api.datastore.Key;
-
+/* Changed the annotations here too according to: 
+ * https://cloud.google.com/appengine/docs/java/datastore/jpa/overview
+ * --> See 'Inheritance' for a pretty clear template on how to do this.
+ */
 @Entity
 public class Reservation extends Quote {
+	
+
 	
     private int carId;
     

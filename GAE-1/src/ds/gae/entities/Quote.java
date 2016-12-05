@@ -11,13 +11,14 @@ import javax.persistence.Temporal;
 
 import com.google.appengine.api.datastore.Key;
 
-@Entity
 @MappedSuperclass
+@Entity
 public class Quote {
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Key key;
-	
+
 	@Temporal(javax.persistence.TemporalType.DATE)
     private Date startDate;
 	@Temporal(javax.persistence.TemporalType.DATE)

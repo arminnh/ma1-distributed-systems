@@ -1,9 +1,7 @@
 package ds.gae;
 
-import java.io.Console;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -29,26 +27,6 @@ public class CarRentalModel {
 		if (instance == null)
 			instance = new CarRentalModel();
 		return instance;
-	}
-	
-	/**
-	 * Get the rental company with the given name.
-	 *
-	 * @param 	name
-	 * 			the name of the car rental company
-	 * @return	the car rental company
-	 */
-	
-	private CarRentalCompany getCarRentalCompany(String name) 
-	{
-		EntityManager em = EMF.get().createEntityManager();
-		
-		try {
-			CarRentalCompany crc = em.find(CarRentalCompany.class, name);
-			return crc;
-		} finally {
-			em.close();
-		}
 	}
 		
 	/**
@@ -116,17 +94,29 @@ public class CarRentalModel {
 	 */
     public Quote createQuote(String company, String renterName, ReservationConstraints constraints) throws ReservationException {
 		// FIXED?: use persistence instead
+    	// ^-- Not fixed, this is what we had:	
     	
-    	CarRentalCompany crc = this.getCarRentalCompany(company);
-    	Quote out = null;
+    	// >>> CarRentalCompany crc = this.getCarRentalCompany(company);"
+    	
+    	// ^-- This means that the entity manager is closed when we use this company,
+    	//	   because the "finally" block of that function is executed when we return.
+    	//	   We may thus no longer access the returned CRC's child entities, as we 
+    	//     only do lazy loading and the em is closed.
+    	//     (Assignment pdf explains this pretty well.)
+    	
+    	// Solution:
+    	EntityManager em = EMF.get().createEntityManager();
+    	try {
+    		CarRentalCompany crc = em.find(CarRentalCompany.class, company);
 
-        if (crc != null) {
-            out = crc.createQuote(constraints, renterName);
-        } else {
-        	throw new ReservationException("CarRentalCompany not found.");    	
-        }
-        
-        return out;
+            if (crc != null)
+            	return crc.createQuote(constraints, renterName);
+            else
+            	throw new ReservationException("CarRentalCompany not found.");    	
+    		
+    	} finally {
+    		em.close();
+    	}
     }
     
 	/**
@@ -140,19 +130,16 @@ public class CarRentalModel {
 	 */
 	public Reservation confirmQuote(Quote q) throws ReservationException {
 		// FIXED: use persistence instead
-
-		CarRentalCompany crc = this.getCarRentalCompany(q.getRentalCompany());
-        Reservation r = crc.confirmQuote(q);
-        
-        EntityManager em = EMF.get().createEntityManager();
+		// ^-- Was not fixed for the reason in the function above :)
+		
+		EntityManager em = EMF.get().createEntityManager();
         
         try {
-        	em.persist(r);
+        	CarRentalCompany crc = em.find(CarRentalCompany.class, q.getRentalCompany());
+            return crc.confirmQuote(q);
         } finally {
         	em.close();
         }
-        
-        return r;
 	}
 	
     /**
@@ -224,7 +211,16 @@ public class CarRentalModel {
     	EntityManager em = EMF.get().createEntityManager();
     	
     	try {
-    		return em.createQuery("SELECT CRC.carTypes from CarRentalCompany CRC", CarType.class).getResultList();
+    		// Note-> changed this, this query returns a hashmap, not a cartype. 
+    		// fixes the error: 
+    		
+    		/*  Query needs to return objects of type 
+    		    "ds.gae.entities.CarType" but it was impossible to set the field 
+    		    "carTypes" type "org.datanucleus.store.types.sco.simple.HashMap". 
+    		    The field should have either a public set/put method, or be public. */
+
+    		return em.createQuery("SELECT CRC.carTypes from CarRentalCompany CRC WHERE CRC.name = :crcname", Map.class)
+    				.setParameter("crcname", crcName).getSingleResult().values();
     	} finally {
     		em.close();
     	}
@@ -271,13 +267,27 @@ public class CarRentalModel {
 	 */
 	private List<Car> getCarsByCarType(String crcName, CarType carType) {				
 		// FIXED?
+		// ^-- changed this too, i think this wasn't expressible in the way we used:
+		
+		// SELECT C FROM CarRentalCompany CRC JOIN CRC.cars C JOIN CRC.carType CT WHERE CRC.name = :company AND CT.name = :ct
+		
+		// Changed to use less JPQL and more Java... :(
+		
 		EntityManager em = EMF.get().createEntityManager();
 		
 		try {
-			return em.createQuery("SELECT C FROM CarRentalCompany CRC JOIN CRC.cars C JOIN CRC.carType CT WHERE CRC.name = :company AND CT.name = :ct", Car.class)
+			Set<Car> cs=  em.createQuery("SELECT CRC.cars FROM CarRentalCompany CRC WHERE CRC.name = :company", Set.class)
 					 .setParameter("company", crcName)
-					 .setParameter("ct", carType.getName())
-					 .getResultList();
+					 .getSingleResult();
+			
+			List<Car> result = new ArrayList<Car>();
+			
+			for(Car c : cs) {
+				if(c.getType().equals(carType))
+					result.add(c);
+			}
+			
+			return result;
 		} finally {
 			em.close();
 		}

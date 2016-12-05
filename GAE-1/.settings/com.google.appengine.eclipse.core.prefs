@@ -4,4 +4,4 @@ gaeDatanucleusVersion=v2
 gaeHrdEnabled=true
 googleCloudSqlEnabled=false
 localDevMySqlEnabled=true
-ormEnhancementInclusions=src/|src/ds/gae/entities/Car.java|src/ds/gae/entities/CarRentalCompany.java|src/ds/gae/entities/CarType.java|src/ds/gae/entities/Quote.java|src/ds/gae/entities/Reservation.java
+ormEnhancementInclusions=src/ds/gae/entities/Car.java|src/ds/gae/entities/CarRentalCompany.java|src/ds/gae/entities/CarType.java|src/ds/gae/entities/Quote.java|src/ds/gae/entities/Reservation.java

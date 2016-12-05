@@ -32,6 +32,8 @@ public class CarType {
         this.rentalPricePerDay = rentalPricePerDay;
         this.smokingAllowed = smokingAllowed;
     }
+    
+    public CarType(){}
 
     public String getName() {
     	return name;

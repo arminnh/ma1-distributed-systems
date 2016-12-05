@@ -24,33 +24,33 @@ public class CarRentalServletContextListener implements ServletContextListener {
 
 	@Override
 	public void contextInitialized(ServletContextEvent arg0) {
-		// This will be invoked as part of a warming request, 
+		// This will be invoked as part of a warming request,
 		// or the first user request if no warming request was invoked.
-						
+
 		// check if dummy data is available, and add if necessary
 		if(!isDummyDataAvailable()) {
 			addDummyData();
 		}
 	}
-	
+
 	private boolean isDummyDataAvailable() {
 		// If the Hertz car rental company is in the datastore, we assume the dummy data is available
 
 		// FIXED: use persistence instead
 		return CarRentalModel.get().getAllRentalCompanyNames().contains("Hertz");
 	}
-	
+
 	private void addDummyData() {
 		loadRental("Hertz","hertz.csv");
         loadRental("Dockx","dockx.csv");
 	}
-	
+
 	private void loadRental(String name, String datafile) {
 		Logger.getLogger(CarRentalServletContextListener.class.getName()).log(Level.INFO, "loading {0} from file {1}", new Object[]{name, datafile});
         try {
-        	
+
             Set<Car> cars = loadData(name, datafile);
-            
+
     		// FIXED: use persistence instead
             CarRentalModel.get().createCarRentalCompany(new CarRentalCompany(name, cars));
 
@@ -60,10 +60,10 @@ public class CarRentalServletContextListener implements ServletContextListener {
             Logger.getLogger(CarRentalServletContextListener.class.getName()).log(Level.SEVERE, null, ex);
         }
 	}
-	
+
 	public static Set<Car> loadData(String name, String datafile) throws NumberFormatException, IOException {
 		// FIXED?: adapt the implementation of this method to your entity structure
-		
+
 		Set<Car> cars = new HashSet<Car>();
 		int carId = 1;
 
@@ -85,11 +85,11 @@ public class CarRentalServletContextListener implements ServletContextListener {
 					Float.parseFloat(csvReader.nextToken()),
 					Double.parseDouble(csvReader.nextToken()),
 					Boolean.parseBoolean(csvReader.nextToken()));
-			
+
 			/*
 			 * Peristing here already fixes a weird cross group transaction error.
 			 * Having the cartypes in dB already doesn't seem unlogical though.
-			 * TODO: move this to a more suitable place. Maybe make an "addCarType" method 
+			 * TODO: move this to a more suitable place. Maybe make an "addCarType" method
 			 * in the carrentalmodel
 			 */
 			EntityManager em = EMF.get().createEntityManager();
@@ -98,7 +98,7 @@ public class CarRentalServletContextListener implements ServletContextListener {
 			} finally {
 				em.close();
 			}
-			
+
 			//create N new cars with given type, where N is the 5th field
 			for (int i = Integer.parseInt(csvReader.nextToken()); i > 0; i--) {
 				cars.add(new Car(carId++, type));

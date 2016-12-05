@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -39,12 +38,10 @@ public class Car {
      * 	   car: e.g. when other cars of this type exist.
      */
     @Unowned
-    @ManyToOne(cascade=CascadeType.PERSIST)
-    @Basic
+    @ManyToOne(cascade=CascadeType.ALL)
 	private CarType type;
 
-	@OneToMany(cascade=CascadeType.PERSIST)
-    @Basic
+	@OneToMany(cascade=CascadeType.ALL)
     private Set<Reservation> reservations = new HashSet<Reservation>();
 
     /***************
@@ -58,7 +55,7 @@ public class Car {
     }
     
     public Car() { 
-        this.reservations = new HashSet<Reservation>();
+        //this.reservations = new HashSet<Reservation>();
     }
     
     /******
@@ -106,7 +103,6 @@ public class Car {
     }
     
     public void addReservation(Reservation res) {
-    	// FIXME: why is this always null?
         reservations.add(res);
     }
     
