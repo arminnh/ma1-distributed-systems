@@ -41,7 +41,7 @@ public class CarRentalModel {
 		EntityManager em = EMF.get().createEntityManager();
 		Set<String> results = new HashSet<String>();
 		try {
-			results.addAll(em.createQuery("SELECT CarType.name FROM CarTypes").getResultList());
+			results.addAll(em.createNamedQuery("CarRentalModel.getCarTypesNames").getResultList());
 		} finally {
 			em.close();
 		}
@@ -56,7 +56,7 @@ public class CarRentalModel {
     public List<String> getAllRentalCompanyNames() {
 		EntityManager em = EMF.get().createEntityManager();
 		try {
-			return em.createQuery("SELECT CRC.name FROM CarRentalCompany CRC").getResultList();
+			return em.createNamedQuery("CarRentalModel.getAllRentalCompanyNames").getResultList();
 		} finally {
 			em.close();
 		}
@@ -72,7 +72,7 @@ public class CarRentalModel {
     {
     	EntityManager em = EMF.get().createEntityManager();
 		try {
-			return em.createQuery("SELECT CRC FROM CarRentalCompany CRC").getResultList();
+			return em.createNamedQuery("CarRentalModel.getAllCarRentalCompanies").getResultList();
 		} finally {
 			em.close();
 		}
@@ -192,7 +192,7 @@ public class CarRentalModel {
 		EntityManager em = EMF.get().createEntityManager();
 		
 		try {
-			return em.createQuery("SELECT R FROM Reservation R WHERE R.carRenter = :renter", Reservation.class).setParameter("renter", renter).getResultList();
+			return em.createNamedQuery("CarRentalModel.getReservations", Reservation.class).setParameter("renter", renter).getResultList();
 		} finally {
 			em.close();
 		}
@@ -219,7 +219,7 @@ public class CarRentalModel {
     		    "carTypes" type "org.datanucleus.store.types.sco.simple.HashMap". 
     		    The field should have either a public set/put method, or be public. */
 
-    		return em.createQuery("SELECT CRC.carTypes from CarRentalCompany CRC WHERE CRC.name = :crcname", Map.class)
+    		return em.createNamedQuery("CarRentalModel.getCarTypesOfCarRentalCompany", Map.class)
     				.setParameter("crcname", crcName).getSingleResult().values();
     	} finally {
     		em.close();
@@ -276,7 +276,7 @@ public class CarRentalModel {
 		EntityManager em = EMF.get().createEntityManager();
 		
 		try {
-			Set<Car> cs=  em.createQuery("SELECT CRC.cars FROM CarRentalCompany CRC WHERE CRC.name = :company", Set.class)
+			Set<Car> cs=  em.createNamedQuery("CarRentalModel.getCarsByCarType", Set.class)
 					 .setParameter("company", crcName)
 					 .getSingleResult();
 			
