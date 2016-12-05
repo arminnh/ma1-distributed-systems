@@ -4,15 +4,18 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.persistence.EntityManager;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import ds.gae.CarRentalModel;
+import ds.gae.EMF;
 import ds.gae.entities.Car;
 import ds.gae.entities.CarRentalCompany;
 import ds.gae.entities.CarType;
@@ -33,9 +36,8 @@ public class CarRentalServletContextListener implements ServletContextListener {
 	private boolean isDummyDataAvailable() {
 		// If the Hertz car rental company is in the datastore, we assume the dummy data is available
 
-		// FIXME: use persistence instead
-		return CarRentalModel.get().CRCS.containsKey("Hertz");
-
+		// FIXED: use persistence instead
+		return CarRentalModel.get().getAllRentalCompanyNames().contains("Hertz");
 	}
 	
 	private void addDummyData() {
@@ -48,10 +50,9 @@ public class CarRentalServletContextListener implements ServletContextListener {
         try {
         	
             Set<Car> cars = loadData(name, datafile);
-            CarRentalCompany company = new CarRentalCompany(name, cars);
             
-    		// FIXME: use persistence instead
-            CarRentalModel.get().CRCS.put(name, company);
+    		// FIXED: use persistence instead
+            CarRentalModel.get().createCarRentalCompany(new CarRentalCompany(name, cars));
 
         } catch (NumberFormatException ex) {
             Logger.getLogger(CarRentalServletContextListener.class.getName()).log(Level.SEVERE, "bad file", ex);
@@ -61,7 +62,7 @@ public class CarRentalServletContextListener implements ServletContextListener {
 	}
 	
 	public static Set<Car> loadData(String name, String datafile) throws NumberFormatException, IOException {
-		// FIXME: adapt the implementation of this method to your entity structure
+		// FIXED?: adapt the implementation of this method to your entity structure
 		
 		Set<Car> cars = new HashSet<Car>();
 		int carId = 1;
@@ -84,6 +85,20 @@ public class CarRentalServletContextListener implements ServletContextListener {
 					Float.parseFloat(csvReader.nextToken()),
 					Double.parseDouble(csvReader.nextToken()),
 					Boolean.parseBoolean(csvReader.nextToken()));
+			
+			/*
+			 * Peristing here already fixes a weird cross group transaction error.
+			 * Having the cartypes in dB already doesn't seem unlogical though.
+			 * TODO: move this to a more suitable place. Maybe make an "addCarType" method 
+			 * in the carrentalmodel
+			 */
+			EntityManager em = EMF.get().createEntityManager();
+			try {
+				em.persist(type);
+			} finally {
+				em.close();
+			}
+			
 			//create N new cars with given type, where N is the 5th field
 			for (int i = Integer.parseInt(csvReader.nextToken()); i > 0; i--) {
 				cars.add(new Car(carId++, type));
@@ -96,5 +111,6 @@ public class CarRentalServletContextListener implements ServletContextListener {
 	@Override
 	public void contextDestroyed(ServletContextEvent arg0) {
 		// App Engine does not currently invoke this method.
+		// TODO: ???
 	}
 }

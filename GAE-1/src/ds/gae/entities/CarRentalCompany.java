@@ -11,14 +11,34 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.jdo.annotations.NotPersistent;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.GenerationType;
+
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.datanucleus.annotations.Unowned;
+
 import ds.gae.ReservationException;
 
+@Entity
 public class CarRentalCompany {
-
+	
 	private static Logger logger = Logger.getLogger(CarRentalCompany.class.getName());
 	
+	@Id
 	private String name;
+	
+	@OneToMany(cascade = CascadeType.PERSIST)
+	@Basic
 	private Set<Car> cars;
+	
+	@OneToMany(cascade = CascadeType.PERSIST)
+	@Basic
 	private Map<String,CarType> carTypes = new HashMap<String, CarType>();
 
 	/***************
@@ -106,16 +126,14 @@ public class CarRentalCompany {
 	 * RESERVATIONS *
 	 ****************/
 
-	public Quote createQuote(ReservationConstraints constraints, String client)
-			throws ReservationException {
-		logger.log(Level.INFO, "<{0}> Creating tentative reservation for {1} with constraints {2}", 
-                        new Object[]{name, client, constraints.toString()});
+	public Quote createQuote(ReservationConstraints constraints, String client) throws ReservationException {
+		logger.log(Level.INFO, "<{0}> Creating tentative reservation for {1} with constraints {2}",  new Object[]{name, client, constraints.toString()});
 		
 		CarType type = getCarType(constraints.getCarType());
 		
-		if(!isAvailable(constraints.getCarType(), constraints.getStartDate(), constraints.getEndDate()))
-			throw new ReservationException("<" + name
-				+ "> No cars available to satisfy the given constraints.");
+		if(!isAvailable(constraints.getCarType(), constraints.getStartDate(), constraints.getEndDate())) {
+			throw new ReservationException("<" + name + "> No cars available to satisfy the given constraints.");
+		}
 		
 		double price = calculateRentalPrice(type.getRentalPricePerDay(),constraints.getStartDate(), constraints.getEndDate());
 		
@@ -131,12 +149,15 @@ public class CarRentalCompany {
 	public Reservation confirmQuote(Quote quote) throws ReservationException {
 		logger.log(Level.INFO, "<{0}> Reservation of {1}", new Object[]{name, quote.toString()});
 		List<Car> availableCars = getAvailableCars(quote.getCarType(), quote.getStartDate(), quote.getEndDate());
-		if(availableCars.isEmpty())
-			throw new ReservationException("Reservation failed, all cars of type " + quote.getCarType()
-	                + " are unavailable from " + quote.getStartDate() + " to " + quote.getEndDate());
-		Car car = availableCars.get((int)(Math.random()*availableCars.size()));
 		
-		Reservation res = new Reservation(quote, car.getId());
+		if(availableCars.isEmpty()) {
+			throw new ReservationException("Reservation failed, all cars of type " + quote.getCarType()
+            								+ " are unavailable from " + quote.getStartDate() + " to " + quote.getEndDate());
+			
+		}
+		
+		Car car = availableCars.get((int)(Math.random()*availableCars.size()));
+		Reservation res = new Reservation(quote, (int)car.getId());
 		car.addReservation(res);
 		return res;
 	}
