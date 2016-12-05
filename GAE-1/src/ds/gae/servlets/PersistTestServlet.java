@@ -3,6 +3,8 @@ package ds.gae.servlets;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -20,8 +22,7 @@ public class PersistTestServlet extends HttpServlet {
 	private static final long serialVersionUID = -4694162076388862047L;
 
 	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String companyName = "Hertz";
 		String userName = "Pieter A.";
 		
@@ -35,9 +36,21 @@ public class PersistTestServlet extends HttpServlet {
 				ReservationConstraints c = new ReservationConstraints(
 						ViewTools.DATE_FORMAT.parse("01.02.2011"), 
 						ViewTools.DATE_FORMAT.parse("01.03.2011"), "Compact");
-			
+				
 				final Quote q = CarRentalModel.get().createQuote(companyName, userName, c);
-				CarRentalModel.get().confirmQuote(q);
+//				CarRentalModel.get().confirmQuote(q);
+				
+				ReservationConstraints c2 = new ReservationConstraints(
+						ViewTools.DATE_FORMAT.parse("01.02.2011"), 
+						ViewTools.DATE_FORMAT.parse("01.03.2011"), "Special");
+				final Quote q2 = CarRentalModel.get().createQuote("Dockx", userName, c2);
+//				CarRentalModel.get().confirmQuote(q2);
+				
+				List<Quote> lijst = new ArrayList<Quote>();
+				lijst.add(q);
+				lijst.add(q2);
+				
+				CarRentalModel.get().confirmQuotes(lijst);
 			}
 			
 			resp.sendRedirect(JSPSite.PERSIST_TEST.url());

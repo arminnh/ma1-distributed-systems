@@ -128,18 +128,18 @@ public class CarRentalModel {
 	 * @throws ReservationException
 	 * 			Confirmation of given quote failed.	
 	 */
-	public Reservation confirmQuote(Quote q) throws ReservationException {
+	public Reservation confirmQuote(Quote q, EntityManager em) throws ReservationException {
 		// FIXED: use persistence instead
 		// ^-- Was not fixed for the reason in the function above :)
 		
-		EntityManager em = EMF.get().createEntityManager();
+		if (em == null) {
+			em = EMF.get().createEntityManager();
+		}
         
-        try {
-        	CarRentalCompany crc = em.find(CarRentalCompany.class, q.getRentalCompany());
-            return crc.confirmQuote(q);
-        } finally {
-        	em.close();
-        }
+    	CarRentalCompany crc = em.find(CarRentalCompany.class, q.getRentalCompany());
+        Reservation r = crc.confirmQuote(q);
+        em.persist(r);
+        return r;
 	}
 	
     /**
@@ -164,7 +164,7 @@ public class CarRentalModel {
 		    	List<Reservation> reservations = new ArrayList<Reservation>();
 		    	
 				for (Quote q : quotes) {
-					Reservation r = this.confirmQuote(q);
+					Reservation r = this.confirmQuote(q, em);
 					reservations.add(r);
 				}
 				
