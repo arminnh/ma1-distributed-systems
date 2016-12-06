@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings
+        version="2.1"
+        xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence/orm
+            http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd">
+       
+    <named-query name="CarRentalModel.getCarTypesNames">
+        <query>
+            SELECT CarType.name 
+            FROM CarTypes
+        </query>
+    </named-query>
+    
+    <named-query name="CarRentalModel.getAllRentalCompanyNames">
+        <query>
+            SELECT CRC.name 
+            FROM CarRentalCompany CRC
+        </query>
+    </named-query>
+    
+    <named-query name="CarRentalModel.getAllCarRentalCompanies">
+        <query>
+            SELECT CRC 
+            FROM CarRentalCompany CRC
+        </query>
+    </named-query>
+    
+    <named-query name="CarRentalModel.getReservations">
+        <query>
+            SELECT R 
+            FROM Reservation R 
+            WHERE R.carRenter = :renter
+        </query>
+    </named-query>
+    
+    <named-query name="CarRentalModel.getCarTypesOfCarRentalCompany">
+        <query>
+            SELECT CRC.carTypes 
+            from CarRentalCompany CRC 
+            WHERE CRC.name = :crcname
+        </query>
+    </named-query>
+    
+    <named-query name="CarRentalModel.getCarsByCarType">
+        <query>
+            SELECT CRC.cars 
+            FROM CarRentalCompany CRC 
+            WHERE CRC.name = :company
+        </query>
+    </named-query>
+    
+    
+    
+</entity-mappings>
