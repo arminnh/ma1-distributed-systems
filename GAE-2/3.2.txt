@@ -1,0 +1,22 @@
+At which step of the workflow for booking a car reservation (create quote, collect quotes,
+confirm) would the indirect communication between objects or components kick in?
+
+Indirect communication kicks in when users confirm quotes. 
+This communication happens in ConfirmQuotesServlet, which enqueues a task. 
+This task is then assigned to a worker. The communication is indirect, 
+since the worker may be assigned the task at any later time.
+
+
+Which kind of data is passed between both sides? Does it make sense to persist data and
+only pass references to that data?
+
+Only tasks (containing lists of quotes users want to confirm) are passed between both sides. 
+More specifically, they are only sent from the front-end to the back-end.
+Persist data? // TODO: ask assistant
+
+
+
+Vragen:
+back-channel
+persisting
+XGT

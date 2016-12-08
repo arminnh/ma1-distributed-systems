@@ -1,0 +1,27 @@
+Assume a scenario in which two different clients try to confirm a couple of tentative reservations,
+i.e. their quotes are queued to be processed by the back end. Both include a tentative reservation
+to the last available car of a certain car type, so that, assuming correct behaviour of the car rental
+application, it should fail to confirm the quotes to one of them.
+
+
+
+• Is there a scenario in which the code to confirm the quotes is executed multiple times in
+parallel, resulting in a positive confirmation to both clients’ quotes?
+Yes. If there are multiple workers that handle both of the tasks in parallel, it is possible
+that they will check availability at the same time and thus both falsely assume that the 
+car is available. In this case an inconsistency is created, because the car will have two reservations
+in overlapping periods.
+
+
+• If so, can you name and illustrate one (or more) possibilities to prevent this bogus behaviour?
+If there is only one worker that handles ConfirmQueue requests, the bogus behaviour will not occur.
+In this case there is a tradeoff for consistent behaviour over performance (no parallelism).
+
+
+• In case your solution to the previous question limits parallelism, would a different design
+of the indirect communication channels help to increase parallelism? For this question, you
+may assume that a client will have quotes belonging to one car rental company only.
+In this case, a different queue could be used for each car rental company. Doing this allows for a certain
+degree of parallelism, as we can now process confirmQuotesTasks for different car rental companies 
+in parallel. 
+
