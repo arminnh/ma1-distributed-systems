@@ -8,8 +8,8 @@
        
     <named-query name="CarRentalModel.getCarTypesNames">
         <query>
-            SELECT CarType.name 
-            FROM CarTypes
+            SELECT CT.name 
+            FROM CarType CT
         </query>
     </named-query>
     

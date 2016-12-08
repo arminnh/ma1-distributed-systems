@@ -41,7 +41,7 @@ public class CarRentalModel {
 		EntityManager em = EMF.get().createEntityManager();
 		Set<String> results = new HashSet<String>();
 		try {
-			results.addAll(em.createNamedQuery("CarRentalModel.getCarTypesNames").getResultList());
+			results.addAll(em.createNamedQuery("CarRentalModel.getCarTypesNames", String.class).getResultList());
 		} finally {
 			em.close();
 		}
@@ -56,7 +56,7 @@ public class CarRentalModel {
     public List<String> getAllRentalCompanyNames() {
 		EntityManager em = EMF.get().createEntityManager();
 		try {
-			return em.createNamedQuery("CarRentalModel.getAllRentalCompanyNames").getResultList();
+			return em.createNamedQuery("CarRentalModel.getAllRentalCompanyNames", String.class).getResultList();
 		} finally {
 			em.close();
 		}
@@ -72,7 +72,7 @@ public class CarRentalModel {
     {
     	EntityManager em = EMF.get().createEntityManager();
 		try {
-			return em.createNamedQuery("CarRentalModel.getAllCarRentalCompanies").getResultList();
+			return em.createNamedQuery("CarRentalModel.getAllCarRentalCompanies", CarRentalCompany.class).getResultList();
 		} finally {
 			em.close();
 		}
@@ -170,12 +170,14 @@ public class CarRentalModel {
 			        Reservation r = crc.confirmQuote(q);
 			        em.persist(r);
 					reservations.add(r);
+	    			System.out.println("Added reservation for " + crc.getName());
 				}
 				
 				tx.commit();
 		    	return reservations;
 	    	} finally {
 	    		if (tx.isActive()) {
+	    			System.out.println("Rolling back");
 	    			tx.rollback();
 	    		}
 	    	}
