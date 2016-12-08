@@ -158,6 +158,8 @@ public class CarRentalModel {
     public List<Reservation> confirmQuotes(List<Quote> quotes) throws ReservationException {
     	EntityManager em = EMF.get().createEntityManager();
     	
+    	// TODO: ask assistant how to do rollback without XGT
+    	
     	try {
 	    	EntityTransaction tx = em.getTransaction();
 	    	tx.begin();

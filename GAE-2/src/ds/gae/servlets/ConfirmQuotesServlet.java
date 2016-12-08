@@ -10,41 +10,42 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import ds.gae.CarRentalModel;
-import ds.gae.ReservationException;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.TaskOptions;
+
 import ds.gae.entities.Quote;
-import ds.gae.view.ViewTools;
+import ds.gae.tasks.ConfirmQuotesTask;
 import ds.gae.view.JSPSite;
 
 @SuppressWarnings("serial")
 public class ConfirmQuotesServlet extends HttpServlet {
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		
+
 		HttpSession session = req.getSession();
 		HashMap<String, ArrayList<Quote>> allQuotes = (HashMap<String, ArrayList<Quote>>) session.getAttribute("quotes");
 
-		try {
-			ArrayList<Quote> qs = new ArrayList<Quote>();
-			
-			for (String crcName : allQuotes.keySet()) {
-				qs.addAll(allQuotes.get(crcName));
-			}
-			CarRentalModel.get().confirmQuotes(qs);
-			
-			session.setAttribute("quotes", new HashMap<String, ArrayList<Quote>>());
-			
-			// TODO
-			// If you wish confirmQuotesReply.jsp to be shown to the client as
-			// a response of calling this servlet, please replace the following line 
-			// with resp.sendRedirect(JSPSite.CONFIRM_QUOTES_RESPONSE.url());
-			resp.sendRedirect(JSPSite.CREATE_QUOTES.url());
-		} catch (ReservationException e) {
-			session.setAttribute("errorMsg", ViewTools.encodeHTML(e.getMessage()));
-			resp.sendRedirect(JSPSite.RESERVATION_ERROR.url());				
+		ArrayList<Quote> qs = new ArrayList<Quote>();
+
+		for (String crcName : allQuotes.keySet()) {
+			qs.addAll(allQuotes.get(crcName));
 		}
+		//CarRentalModel.get().confirmQuotes(qs);
+
+		Queue queue = QueueFactory.getQueue("best-queue");
+		queue.add(TaskOptions.Builder.withPayload(new ConfirmQuotesTask(qs)));
+
+		session.setAttribute("quotes", new HashMap<String, ArrayList<Quote>>());
+
+		// TODO
+		// If you wish confirmQuotesReply.jsp to be shown to the client as
+		// a response of calling this servlet, please replace the following line 
+		// with resp.sendRedirect(JSPSite.CONFIRM_QUOTES_RESPONSE.url());
+		resp.getWriter().println("TEST de quotes zijn in queue REQUEST IS IN PROGRESS PLS WAIT");
+		resp.sendRedirect(JSPSite.CREATE_QUOTES.url());
 	}
 }
