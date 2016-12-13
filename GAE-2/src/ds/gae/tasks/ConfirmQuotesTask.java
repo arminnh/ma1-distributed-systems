@@ -5,10 +5,8 @@ import java.util.List;
 import com.google.appengine.api.taskqueue.DeferredTask;
 
 import ds.gae.CarRentalModel;
-import ds.gae.ReservationException;
+import ds.gae.EmailSender;
 import ds.gae.entities.Quote;
-import ds.gae.view.JSPSite;
-import ds.gae.view.ViewTools;
 
 public class ConfirmQuotesTask implements DeferredTask {
 	
@@ -22,19 +20,19 @@ public class ConfirmQuotesTask implements DeferredTask {
 
 	@Override
 	public void run() {
+		System.out.println("Confirm quotes task start");
+		
+		EmailSender.sendMail("Your request is being handled pls wait");
+		
 		try {
 			CarRentalModel.get().confirmQuotes(quotes);
+			EmailSender.sendMail("Your request has finished");
 		} catch(Exception e) {
+			EmailSender.sendMail("Your request has failed, info: " + e.getMessage());
 			e.printStackTrace();
 		}
-		System.out.println("TASK");
-		/*
-		 * 
-		} catch (ReservationException e) {
-			session.setAttribute("errorMsg", ViewTools.encodeHTML(e.getMessage()));
-			resp.sendRedirect(JSPSite.RESERVATION_ERROR.url());
-		 */
+		
+		System.out.println("Confirm quotes task finished");
 	}
-
 	
 }

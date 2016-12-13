@@ -63,21 +63,6 @@ public class CarRentalModel {
     }
 
 
-    /**
-     * Get all registered car rental companies
-     *
-     * @return	the list of car rental companies
-     */
-    private List<CarRentalCompany> getAllCarRentalCompanies() 
-    {
-    	EntityManager em = EMF.get().createEntityManager();
-		try {
-			return em.createNamedQuery("CarRentalModel.getAllCarRentalCompanies", CarRentalCompany.class).getResultList();
-		} finally {
-			em.close();
-		}
-    }
-	
 	/**
 	 * Create a quote according to the given reservation constraints (tentative reservation).
 	 * 
@@ -228,7 +213,7 @@ public class CarRentalModel {
     		    The field should have either a public set/put method, or be public. */
 
     		return em.createNamedQuery("CarRentalModel.getCarTypesOfCarRentalCompany", Map.class)
-    				.setParameter("crcname", crcName).getSingleResult().values();
+    				 .setParameter("crcname", crcName).getSingleResult().values();
     	} finally {
     		em.close();
     	}
@@ -285,8 +270,8 @@ public class CarRentalModel {
 		
 		try {
 			Set<Car> cs=  em.createNamedQuery("CarRentalModel.getCarsByCarType", Set.class)
-					 .setParameter("company", crcName)
-					 .getSingleResult();
+					 		.setParameter("company", crcName)
+					 		.getSingleResult();
 			
 			List<Car> result = new ArrayList<Car>();
 			
