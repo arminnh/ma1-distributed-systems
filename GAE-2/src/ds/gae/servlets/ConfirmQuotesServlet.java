@@ -45,7 +45,7 @@ public class ConfirmQuotesServlet extends HttpServlet {
 		// If you wish confirmQuotesReply.jsp to be shown to the client as
 		// a response of calling this servlet, please replace the following line 
 		// with resp.sendRedirect(JSPSite.CONFIRM_QUOTES_RESPONSE.url());
-		resp.getWriter().println("TEST de quotes zijn in queue REQUEST IS IN PROGRESS PLS WAIT");
+		resp.getWriter().println("Quotes are in queue");
 		resp.sendRedirect(JSPSite.CREATE_QUOTES.url());
 	}
 }

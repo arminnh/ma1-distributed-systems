@@ -32,9 +32,6 @@ public class PersistTestServlet extends HttpServlet {
 		try {
 			boolean fullApplicationDeployed = new File(getServletContext().getRealPath(JSPSite.CREATE_QUOTES.url())).exists();
 
-			 System.out.println("Onbetrouwbare if");
-			 System.out.println(CarRentalModel.get().getReservations(userName).size() == 0);
-			 System.out.println(!fullApplicationDeployed);
 			if (CarRentalModel.get().getReservations(userName).size() == 0 && fullApplicationDeployed) {
 
 				List<Quote> quotes = new ArrayList<Quote>();
