@@ -12,12 +12,10 @@ import javax.mail.internet.MimeMessage;
 
 public class EmailSender {
 
-	public static void sendMail(String body) {
+	public static void sendMail(String subject, String body) {
 		String host = "smtp.google.com";
 		String to = "example@yahoo.fr";
 		String from = "example@gmail.com";
-		String subject = "this is a test";
-		String messageText = body;
 		boolean sessionDebug = false;
 		
 		// Create some properties and get the default Session.
@@ -41,7 +39,7 @@ public class EmailSender {
 			msg.setRecipients(MimeMessage.RecipientType.TO, address);
 			msg.setSubject(subject);
 			msg.setSentDate(new Date());
-			msg.setText(messageText);
+			msg.setText(body);
 
 			// Hand the message to the default transport service
 			// for delivery.

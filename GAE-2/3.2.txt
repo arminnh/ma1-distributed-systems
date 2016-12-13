@@ -13,3 +13,5 @@ only pass references to that data?
 Only tasks (containing lists of quotes users want to confirm) are passed between both sides. 
 More specifically, they are only sent from the front-end to the back-end.
 Persist data? // TODO: ask assistant
+
+Nog een korte uitleg over hoe we back-channel hebben gedaan

@@ -22,13 +22,13 @@ public class ConfirmQuotesTask implements DeferredTask {
 	public void run() {
 		System.out.println("Confirm quotes task start");
 		
-		EmailSender.sendMail("Your request is being handled pls wait");
+		EmailSender.sendMail("Request is being processed.", "Your request is being processed...");
 		
 		try {
 			CarRentalModel.get().confirmQuotes(quotes);
-			EmailSender.sendMail("Your request has finished");
+			EmailSender.sendMail("Request finished", "Your request has finished");
 		} catch(Exception e) {
-			EmailSender.sendMail("Your request has failed, info: " + e.getMessage());
+			EmailSender.sendMail("Request failed", "Your request has failed, info: " + e.getMessage());
 			e.printStackTrace();
 		}
 		
