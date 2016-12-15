@@ -1,4 +1,6 @@
 \documentclass[]{article}
+\usepackage{graphicx}
+\graphicspath{ {images/} }
 
 %opening
 \title{Google App Engine: Session 2 }
@@ -25,7 +27,13 @@ To us it seemed like unnecessary work to persist the \texttt{Quote} objects and 
 \end{itemize}
 
 This is why we chose to pass the \texttt{Quotes} by value in the task, at the cost of possibly losing the \texttt{Quotes} in case of a catastrophic failure where the task queue crashes.
-\newpage
+
+\subsection{Deployment diagram}
+\includegraphics[width=\textwidth]{deployment-diagram.jpg}
+
+\subsection{Sequence diagram}
+See 'sequence-diagram.jpg'.
+
 \section{GAE Exercise 3.3}
 \subsection{Question 1}
 
@@ -40,7 +48,7 @@ One way to mitigate this problem would be to limit the amount of workers for the
 Yes, in this case we can have one queue for each car rental company, each with a single worker.
 Doing this allows for a certain degree of parallel processing again, as we can now process \texttt{confirmQuotesTasks} for different car rental companies in parallel.
 
-\section{Note on backchannel}
+\section{Note on back-channel}
 
 After talking with the assistants during the practical sessions, we decided to use the GAE Mail API to realize a backchannel to the user. We chose this option because it's fairly easy to implement and it allows for a backchannel that doesn't actually require the user to visit the site to check the status of a task. This in essence makes it possible to \textbf{inform} the user of the task status, instead of letting the user \textbf{consult} the task status when he visits the site. \\\\
 A confirmation mail is sent when the task is started, a second one is sent if the task fails or succeeds. Please note that the mail API just prints the mails to the console instead of sending them in while in development mode.
